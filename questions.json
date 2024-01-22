@@ -1,0 +1,49 @@
+{   
+    "questions" : [
+        {
+            "question": "คำถามที่ 1",
+            "answerOptions": [
+                { "answerText": "คำตอบที่ถูก", "isCorrect": true },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false }
+            ]
+        },
+        {
+            "question": "คำถามที่ 2",
+            "answerOptions": [
+                { "answerText": "คำตอบที่ถูก", "isCorrect": true },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false }
+            ]
+        },
+        {
+            "question": "คำถามที่ 3",
+            "answerOptions": [
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ถูก", "isCorrect": true },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false }
+            ]
+        },
+        {
+            "question": "คำถามที่ 4",
+            "answerOptions": [
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ถูก", "isCorrect": true }
+            ]
+        },
+        {
+            "question": "คำถามที่ 5",
+            "answerOptions": [
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ถูก", "isCorrect": true },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false },
+                { "answerText": "คำตอบที่ผิด", "isCorrect": false }
+            ]
+        }
+    ]
+}
