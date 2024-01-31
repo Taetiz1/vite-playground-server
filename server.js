@@ -62,7 +62,6 @@ loadRooms();
 
 let activeEmail = []
 const defaultAvatar = 'https://models.readyplayer.me/655a5d4e9b792809cdac419d.glb'
-// let activeVoice = []
 
 ioServer.on('connection', (client) => {
 
@@ -93,7 +92,7 @@ ioServer.on('connection', (client) => {
                     clients[id].currentRoom = roomID
                 }
     
-                client.emit('respawn', [0, 5, 0])
+                client.emit('respawn', [3, 5, 2])
                 client.emit('move', rooms[roomID].clients)
                 client.emit('currentRoom', roomID)
             }
@@ -180,11 +179,12 @@ ioServer.on('connection', (client) => {
 
         try {
 
-            client.emit('call users', rooms[clients[client.id].currentRoom].activeVoice)
-
-            if(!rooms[clients[client.id].currentRoom].activeVoice.hasOwnProperty(client.id)) { 
-            
+            if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
                 rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
+
+                const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
+
+                client.emit("all users", usersInThisRoom);
             }
 
         } catch (error) {
@@ -192,6 +192,14 @@ ioServer.on('connection', (client) => {
             console.error(error);
             console.log(`user ${client.id} disconnected`)
         }
+    })
+
+    client.on('sending signal', ({ userToSignal, callerID, signal }) => {
+        ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID });
+    })
+
+    client.on('returning signal', ({ signal, callerID }) => {
+        ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
     })
 
     // client.emit("selectedQuestions", randomQuestions());
@@ -229,27 +237,6 @@ ioServer.on('connection', (client) => {
     //     client.emit("Admin_check" , check)
     // })
 
-    // client.on("join room", ({id}) => {
-        
-    //     if(!activeVoice.includes(id)){
-    //         activeVoice.push(id)
-    //     }
-    //     client.join("voice room");
-
-    //     const usersInThisRoom = activeVoice.filter((usersid) => usersid !== id);
-
-    //     client.emit("all users", usersInThisRoom);
-    //     // client.broadcast.to("voice room").emit("new user",  id)
-    // })
-
-    // client.on("sending signal", ({userToSignal, signal, callerID}) => {
-    //     ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID });
-    // });
-
-    // client.on("returning signal", ({signal, callerID}) => {
-    //     ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
-    // });
-
     client.on('disconnect', () => {
         console.log(
             `User ${client.id} disconnected, there are currently ${ioServer.engine.clientsCount} users connected`
@@ -265,13 +252,21 @@ ioServer.on('connection', (client) => {
                     activeEmail.splice(index, 1);
                 }
             }
-            
 
             if(clients[client.id].currentRoom !== ''){
                 
                 database.set(`${email}.avatarUrl`, rooms[clients[client.id].currentRoom].clients[client.id].avatarUrl);
 
                 delete rooms[clients[client.id].currentRoom].clients[client.id]
+                delete rooms[clients[client.id].currentRoom].activeVoice[client.id]
+                
+                const activeVoiceIindex = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
+    
+                if(activeVoiceIindex !== -1) {
+                    rooms[clients[client.id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
+                }
+    
+
             }
 
         }
