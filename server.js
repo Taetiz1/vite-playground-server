@@ -97,6 +97,7 @@ ioServer.on('connection', (client) => {
                 client.emit('currentRoom', roomID)
             }
         } catch(error) {
+            
             client.disconnect(); 
             console.error(error);
             console.log(`user ${client.id} disconnected`)
@@ -148,6 +149,7 @@ ioServer.on('connection', (client) => {
             client.emit('move', rooms[clients[id].currentRoom].clients)
 
         } catch (error) {
+
             client.disconnect(); 
             console.error(error);
             console.log(`user ${client.id} disconnected`)
@@ -188,6 +190,7 @@ ioServer.on('connection', (client) => {
             }
 
         } catch (error) {
+            
             client.disconnect(); 
             console.error(error);
             console.log(`user ${client.id} disconnected`)
@@ -200,6 +203,14 @@ ioServer.on('connection', (client) => {
 
     client.on('returning signal', ({ signal, callerID }) => {
         ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
+    })
+
+    client.on('exit voice', (id) => {
+        const activeVoiceIindex = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+    
+            if(activeVoiceIindex !== -1) {
+                rooms[clients[id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
+            }
     })
 
     // client.emit("selectedQuestions", randomQuestions());
