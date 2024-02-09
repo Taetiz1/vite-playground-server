@@ -182,9 +182,10 @@ ioServer.on('connection', (client) => {
         try {
 
             if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
-                rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
 
                 const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
+                
+                rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
 
                 client.emit("all users", usersInThisRoom);
             }
