@@ -90,6 +90,13 @@ ioServer.on('connection', (client) => {
                     
                     delete rooms[clients[id].currentRoom].clients[id]
                     clients[id].currentRoom = roomID
+
+                    if(rooms[roomID].activeVoice.includes(id)) {
+
+                        const activeVoiceIindex = rooms[roomID].activeVoice.indexOf(id);
+                        
+                            rooms[roomID].activeVoice.splice(activeVoiceIindex, 1);
+                    }
                 }
     
                 client.emit('respawn', [3, 5, 2])
@@ -257,12 +264,11 @@ ioServer.on('connection', (client) => {
         if(clients[client.id]){
             
             const email = clients[client.id].email
-            if  (email != ''){
+            if(email !== ''){
+
                 const index = activeEmail.indexOf(email);
 
-                if (index !== -1) {
                     activeEmail.splice(index, 1);
-                }
             }
 
             if(clients[client.id].currentRoom !== ''){
@@ -270,20 +276,18 @@ ioServer.on('connection', (client) => {
                 database.set(`${email}.avatarUrl`, rooms[clients[client.id].currentRoom].clients[client.id].avatarUrl);
 
                 delete rooms[clients[client.id].currentRoom].clients[client.id]
-                delete rooms[clients[client.id].currentRoom].activeVoice[client.id]
-                
-                const activeVoiceIindex = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
-    
-                if(activeVoiceIindex !== -1) {
-                    rooms[clients[client.id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
+
+                if(rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
+                        
+                    const activeVoiceIindex = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
+                    
+                        rooms[clients[client.id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
                 }
-    
 
             }
 
         }
 
-        
         delete clients[client.id]
     })
 
