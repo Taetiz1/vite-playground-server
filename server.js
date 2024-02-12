@@ -190,11 +190,20 @@ ioServer.on('connection', (client) => {
 
             if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
 
+                const users = []
+
                 const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
                 
                 rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
 
-                client.emit("all users", usersInThisRoom);
+                usersInThisRoom.forEach((userID) => {
+                    users.push({
+                        ID: userID,
+                        name: rooms[clients[userID].currentRoom].clients[userID].name
+                    })
+                })
+
+                client.emit("all users", users);
             }
 
         } catch (error) {
@@ -206,7 +215,7 @@ ioServer.on('connection', (client) => {
     })
 
     client.on('sending signal', ({ userToSignal, callerID, signal }) => {
-        ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID });
+        ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID, name: rooms[clients[callerID].currentRoom].clients[callerID].name});
     })
 
     client.on('returning signal', ({ signal, callerID }) => {
