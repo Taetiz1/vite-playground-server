@@ -129,6 +129,12 @@ ioServer.on('connection', (client) => {
                     // client.emit('inventory', clients[client.id].inventory)
                     client.emit('configSetting', userConfig.avatarUrl)
                 }
+
+                clients[client.id] = {
+                    currentRoom: '',
+                    email: email,
+                }
+                
             } else { 
                 client.emit('alreadyLogin', true);
                 client.disconnect()
@@ -136,12 +142,11 @@ ioServer.on('connection', (client) => {
         } else {
 
             client.emit('configSetting', defaultAvatar)
-        }
-
         
-        clients[client.id] = {
-            currentRoom: '',
-            email: email,
+            clients[client.id] = {
+                currentRoom: '',
+                email: email,
+            }
         }
     
     })
