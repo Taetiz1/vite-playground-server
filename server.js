@@ -113,7 +113,7 @@ ioServer.on('connection', (client) => {
     })
 
     client.on('getEmail', ({ email }) => {
-        if (email) {
+        if(email) {
 
             if (!activeEmail.includes(email) ) {
                 
@@ -136,7 +136,7 @@ ioServer.on('connection', (client) => {
                 }
                 
             } else { 
-                client.emit('alreadyLogin', true);
+                client.emit('alreadyLogin');
                 client.disconnect()
             }
         } else {
