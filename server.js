@@ -116,7 +116,7 @@ ioServer.on('connection', (client) => {
         if(email) {
 
             if (!activeEmail.includes(email) ) {
-                
+
                 activeEmail.push(email)
 
                 if (!database.data.hasOwnProperty(email)) { 
@@ -134,9 +134,11 @@ ioServer.on('connection', (client) => {
                     currentRoom: '',
                     email: email,
                 }
+
+                client.emit('alreadyLogin', false);
                 
             } else { 
-                client.emit('alreadyLogin');
+                client.emit('alreadyLogin', true);
                 client.disconnect()
             }
         } else {
@@ -147,6 +149,8 @@ ioServer.on('connection', (client) => {
                 currentRoom: '',
                 email: email,
             }
+
+            client.emit('alreadyLogin', false);
         }
     
     })
