@@ -130,27 +130,21 @@ ioServer.on('connection', (client) => {
                     client.emit('configSetting', userConfig.avatarUrl)
                 }
 
-                clients[client.id] = {
-                    currentRoom: '',
-                    email: email,
-                }
-
                 client.emit('alreadyLogin', false);
                 
             } else { 
                 client.emit('alreadyLogin', false);
-                client.disconnect()
             }
         } else {
 
             client.emit('configSetting', defaultAvatar)
-        
-            clients[client.id] = {
-                currentRoom: '',
-                email: email,
-            }
 
             client.emit('alreadyLogin', false);
+        }
+
+        clients[client.id] = {
+            currentRoom: '',
+            email: email,
         }
     
     })
