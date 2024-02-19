@@ -138,7 +138,7 @@ ioServer.on('connection', (client) => {
                 client.emit('alreadyLogin', false);
                 
             } else { 
-                client.emit('alreadyLogin', true);
+                client.emit('alreadyLogin', false);
                 client.disconnect()
             }
         } else {
@@ -156,20 +156,13 @@ ioServer.on('connection', (client) => {
     })
     
     client.on('move', ({ id, rotation, position, action }) => {
-        try {
             
-            rooms[clients[id].currentRoom].clients[id].position = position
-            rooms[clients[id].currentRoom].clients[id].rotation = rotation
-            rooms[clients[id].currentRoom].clients[id].action = action
+        rooms[clients[id].currentRoom].clients[id].position = position
+        rooms[clients[id].currentRoom].clients[id].rotation = rotation
+        rooms[clients[id].currentRoom].clients[id].action = action
 
-            client.emit('move', rooms[clients[id].currentRoom].clients)
-
-        } catch (error) {
-
-            client.disconnect(); 
-            console.error(error);
-            console.log(`user ${client.id} disconnected`)
-        }
+        client.emit('move', rooms[clients[id].currentRoom].clients)
+        
     })
 
     client.on('config', ({ id, avatarUrl}) => {
