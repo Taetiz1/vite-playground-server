@@ -130,33 +130,48 @@ ioServer.on('connection', (client) => {
                     client.emit('configSetting', userConfig.avatarUrl)
                 }
 
+                clients[client.id] = {
+                    currentRoom: '',
+                    email: email,
+                }
+
                 client.emit('alreadyLogin', false);
                 
             } else { 
                 client.emit('alreadyLogin', false);
+                client.disconnect()
             }
         } else {
 
             client.emit('configSetting', defaultAvatar)
+        
+            clients[client.id] = {
+                currentRoom: '',
+                email: email,
+            }
 
             client.emit('alreadyLogin', false);
-        }
-
-        clients[client.id] = {
-            currentRoom: '',
-            email: email,
         }
     
     })
     
     client.on('move', ({ id, rotation, position, action }) => {
+        try {
             
-        rooms[clients[id].currentRoom].clients[id].position = position
-        rooms[clients[id].currentRoom].clients[id].rotation = rotation
-        rooms[clients[id].currentRoom].clients[id].action = action
+            if(clients[id]){
+                rooms[clients[id].currentRoom].clients[id].position = position
+                rooms[clients[id].currentRoom].clients[id].rotation = rotation
+                rooms[clients[id].currentRoom].clients[id].action = action
+            }
 
-        client.emit('move', rooms[clients[id].currentRoom].clients)
-        
+            client.emit('move', rooms[clients[id].currentRoom].clients)
+
+        } catch (error) {
+
+            client.disconnect(); 
+            console.error(error);
+            console.log(`user ${client.id} disconnected`)
+        }
     })
 
     client.on('config', ({ id, avatarUrl}) => {
@@ -167,64 +182,66 @@ ioServer.on('connection', (client) => {
     client.on('message', (msg) => {
         messages.push(msg)
             
-        rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = msg.message;
+        if(clients[msg.id]) {
+            rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = msg.message;
 
-        if(chatheadTimeout) {
-            clearTimeout(chatheadTimeout);
+            if(chatheadTimeout) {
+                clearTimeout(chatheadTimeout);
+            }
+
+            chatheadTimeout = setTimeout(() => {
+                rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = "";
+            }, 5000);
         }
-
-        chatheadTimeout = setTimeout(() => {
-            rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = "";
-        }, 5000);
         
         ioServer.sockets.emit('message', messages);
     });
 
-    client.on('join voice', () => {
+    // client.on('join voice', () => {
 
-        try {
+    //     try {
 
-            if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
+    //         if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
 
-                const users = []
+    //             const users = []
 
-                const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
+    //             const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
                 
-                rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
+    //             rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
 
-                usersInThisRoom.forEach((userID) => {
-                    users.push({
-                        ID: userID,
-                        name: rooms[clients[userID].currentRoom].clients[userID].name
-                    })
-                })
+    //             usersInThisRoom.forEach((userID) => {
+    //                 users.push({
+    //                     ID: userID,
+    //                     name: rooms[clients[userID].currentRoom].clients[userID].name
+    //                 })
+    //             })
 
-                client.emit("all users", users);
-            }
+    //             client.emit("all users", users);
+    //         }
 
-        } catch (error) {
+    //     } catch (error) {
             
-            client.disconnect(); 
-            console.error(error);
-            console.log(`user ${client.id} disconnected`)
-        }
-    })
+    //         client.disconnect(); 
+    //         console.error(error);
+    //         console.log(`user ${client.id} disconnected`)
+    //     }
+    // })
 
-    client.on('sending signal', ({ userToSignal, callerID, signal }) => {
-        ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID, name: rooms[clients[callerID].currentRoom].clients[callerID].name});
-    })
+    // client.on('sending signal', ({ userToSignal, callerID, signal }) => {
+    //     ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID, name: rooms[clients[callerID].currentRoom].clients[callerID].name});
+    // })
 
-    client.on('returning signal', ({ signal, callerID }) => {
-        ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
-    })
+    // client.on('returning signal', ({ signal, callerID }) => {
+    //     ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
+    // })
 
-    client.on('exit voice', (id) => {
-        const activeVoiceIindex = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+    // client.on('exit voice', (id) => {
+    //     const activeVoiceIindex = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
     
-            if(activeVoiceIindex !== -1) {
-                rooms[clients[id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
-            }
-    })
+    //         if(activeVoiceIindex !== -1) {
+    //             rooms[clients[id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
+    //         }
+    // })
 
     // client.emit("selectedQuestions", randomQuestions());
 
