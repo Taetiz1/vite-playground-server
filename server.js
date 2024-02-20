@@ -105,9 +105,8 @@ ioServer.on('connection', (client) => {
             }
         } catch(error) {
             
-            client.disconnect(); 
             console.error(error);
-            console.log(`user ${client.id} disconnected`)
+            console.log(`error from user ${client.id}`)
         }
         
     })
@@ -138,7 +137,7 @@ ioServer.on('connection', (client) => {
                 client.emit('alreadyLogin', false);
                 
             } else { 
-                client.emit('alreadyLogin', false);
+                client.emit('alreadyLogin', true);
                 client.disconnect()
             }
         } else {
@@ -158,7 +157,7 @@ ioServer.on('connection', (client) => {
     client.on('move', ({ id, rotation, position, action }) => {
         try {
             
-            if(clients[id]){
+            if(clients[id]) {
                 rooms[clients[id].currentRoom].clients[id].position = position
                 rooms[clients[id].currentRoom].clients[id].rotation = rotation
                 rooms[clients[id].currentRoom].clients[id].action = action
@@ -168,9 +167,8 @@ ioServer.on('connection', (client) => {
 
         } catch (error) {
 
-            client.disconnect(); 
             console.error(error);
-            console.log(`user ${client.id} disconnected`)
+            console.log(`error from user ${client.id}`)
         }
     })
 
@@ -197,51 +195,12 @@ ioServer.on('connection', (client) => {
         ioServer.sockets.emit('message', messages);
     });
 
-    // client.on('join voice', () => {
+    client.on('join voice', ({id}) => {
+        rooms[clients[id].currentRoom].activeVoice.push(id)
+        const enabled = true
 
-    //     try {
-
-    //         if(!rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
-
-    //             const users = []
-
-    //             const usersInThisRoom = rooms[clients[client.id].currentRoom].activeVoice.filter(id => id !== client.id);
-                
-    //             rooms[clients[client.id].currentRoom].activeVoice.push(client.id)
-
-    //             usersInThisRoom.forEach((userID) => {
-    //                 users.push({
-    //                     ID: userID,
-    //                     name: rooms[clients[userID].currentRoom].clients[userID].name
-    //                 })
-    //             })
-
-    //             client.emit("all users", users);
-    //         }
-
-    //     } catch (error) {
-            
-    //         client.disconnect(); 
-    //         console.error(error);
-    //         console.log(`user ${client.id} disconnected`)
-    //     }
-    // })
-
-    // client.on('sending signal', ({ userToSignal, callerID, signal }) => {
-    //     ioServer.to(userToSignal).emit('user joined', { signal: signal, callerID: callerID, name: rooms[clients[callerID].currentRoom].clients[callerID].name});
-    // })
-
-    // client.on('returning signal', ({ signal, callerID }) => {
-    //     ioServer.to(callerID).emit('receiving returned signal', { signal: signal, id: client.id });
-    // })
-
-    // client.on('exit voice', (id) => {
-    //     const activeVoiceIindex = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
-    
-    //         if(activeVoiceIindex !== -1) {
-    //             rooms[clients[id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
-    //         }
-    // })
+        client.emit('enabled Join Voice', {enabled: enabled})
+    })
 
     // client.emit("selectedQuestions", randomQuestions());
 
