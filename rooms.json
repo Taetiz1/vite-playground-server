@@ -1,18 +1,18 @@
 [
     {
-        "id": 0,
+        "id": "0",
         "name": "free zone",
         "button": [],
         "object": []
     },
     {
-        "id": 1,
+        "id": "1",
         "name": "wat suan kaew front",
         "button": [],
         "object": []
     },
     {
-        "id": 2,
+        "id": "2",
         "name": "wat suan kaew back",
         "button": [],
         "object": []

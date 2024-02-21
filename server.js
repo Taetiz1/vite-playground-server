@@ -41,7 +41,7 @@ let chatheadTimeout;
 //     return selectedQuestions;
 // };  
 
-const rooms = [];
+const rooms = {};
 
 const loadRooms = async () => {
     let data;
@@ -49,12 +49,11 @@ const loadRooms = async () => {
 
     data.forEach((roomItem) => {
         const room = {
-        ...roomItem,
-        clients: {},
-        activeVoice: []
+            clients: {},
+            activeVoice: {}
         };
 
-        rooms.push(room);
+        rooms[roomItem.id] = room
     });
 };
 
@@ -89,14 +88,12 @@ ioServer.on('connection', (client) => {
                 } else {
                     
                     delete rooms[clients[id].currentRoom].clients[id]
-                    clients[id].currentRoom = roomID
 
-                    if(rooms[roomID].activeVoice.includes(id)) {
-
-                        const activeVoiceIindex = rooms[roomID].activeVoice.indexOf(id);
-                        
-                            rooms[roomID].activeVoice.splice(activeVoiceIindex, 1);
+                    if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+                        delete rooms[clients[id].currentRoom].activeVoice[id]
                     }
+
+                    clients[id].currentRoom = roomID
                 }
     
                 client.emit('respawn', [3, 5, 2])
@@ -161,9 +158,11 @@ ioServer.on('connection', (client) => {
                 rooms[clients[id].currentRoom].clients[id].position = position
                 rooms[clients[id].currentRoom].clients[id].rotation = rotation
                 rooms[clients[id].currentRoom].clients[id].action = action
-            }
 
-            client.emit('move', rooms[clients[id].currentRoom].clients)
+                client.emit('move', rooms[clients[id].currentRoom].clients)
+            } else {
+                client.disconnect()
+            }
 
         } catch (error) {
 
@@ -196,10 +195,37 @@ ioServer.on('connection', (client) => {
     });
 
     client.on('join voice', ({id}) => {
-        rooms[clients[id].currentRoom].activeVoice.push(id)
-        const enabled = true
+        let enabled
+        if(!rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+            
+            client.join(clients[id].currentRoom)
+            rooms[clients[id].currentRoom].activeVoice[id] = {
+                mute: false
+            }
+
+            enabled = true
+            const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
+
+            client.emit('mutedUser', mutedUser)
+        }
 
         client.emit('enabled Join Voice', {enabled: enabled})
+    })
+
+    client.on('setMute', ({onMute, from}) => {
+        rooms[clients[from].currentRoom].activeVoice[from].mute = onMute
+        const mutedUser = Object.keys(rooms[clients[from].currentRoom].activeVoice).filter((ID) => rooms[clients[from].currentRoom].activeVoice[ID].mute === true);
+
+        client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+    })
+
+    client.on('exit voice', ({id}) => {
+        if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+            delete rooms[clients[id].currentRoom].activeVoice[id]
+            const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
+                
+            client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+        }
     })
 
     // client.emit("selectedQuestions", randomQuestions());
@@ -257,13 +283,7 @@ ioServer.on('connection', (client) => {
                 database.set(`${email}.avatarUrl`, rooms[clients[client.id].currentRoom].clients[client.id].avatarUrl);
 
                 delete rooms[clients[client.id].currentRoom].clients[client.id]
-
-                if(rooms[clients[client.id].currentRoom].activeVoice.includes(client.id)) {
-                        
-                    const activeVoiceIindex = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
-                    
-                        rooms[clients[client.id].currentRoom].activeVoice.splice(activeVoiceIindex, 1);
-                }
+                delete rooms[clients[client.id].currentRoom].activeVoice[client.id]
 
             }
 
