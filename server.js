@@ -90,6 +90,7 @@ ioServer.on('connection', (client) => {
                     delete rooms[clients[id].currentRoom].clients[id]
 
                     if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+                        client.leave(clients[id].currentRoom)
                         delete rooms[clients[id].currentRoom].activeVoice[id]
                     }
 
@@ -221,10 +222,11 @@ ioServer.on('connection', (client) => {
 
     client.on('exit voice', ({id}) => {
         if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+            client.leave(clients[id].currentRoom)
             delete rooms[clients[id].currentRoom].activeVoice[id]
             const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
                 
-            client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+            client.to(clients[id].currentRoom).emit('mutedUser', mutedUser)
         }
     })
 
@@ -283,6 +285,8 @@ ioServer.on('connection', (client) => {
                 database.set(`${email}.avatarUrl`, rooms[clients[client.id].currentRoom].clients[client.id].avatarUrl);
 
                 delete rooms[clients[client.id].currentRoom].clients[client.id]
+                
+                client.leave(clients[client.id].currentRoom)
                 delete rooms[clients[client.id].currentRoom].activeVoice[client.id]
 
             }
