@@ -156,9 +156,14 @@ ioServer.on('connection', (client) => {
         try {
             
             if(clients[id]) {
-                rooms[clients[id].currentRoom].clients[id].position = position
-                rooms[clients[id].currentRoom].clients[id].rotation = rotation
-                rooms[clients[id].currentRoom].clients[id].action = action
+                if( rooms[clients[id].currentRoom].clients[id].position !== position || 
+                    rooms[clients[id].currentRoom].clients[id].position !== rotation || 
+                    rooms[clients[id].currentRoom].clients[id].action !== action
+                ) {
+                    rooms[clients[id].currentRoom].clients[id].position = position
+                    rooms[clients[id].currentRoom].clients[id].rotation = rotation
+                    rooms[clients[id].currentRoom].clients[id].action = action
+                }
 
                 client.emit('move', rooms[clients[id].currentRoom].clients)
             }
