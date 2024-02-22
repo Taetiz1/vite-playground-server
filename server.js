@@ -161,8 +161,6 @@ ioServer.on('connection', (client) => {
                 rooms[clients[id].currentRoom].clients[id].action = action
 
                 client.emit('move', rooms[clients[id].currentRoom].clients)
-            } else {
-                client.disconnect()
             }
 
         } catch (error) {
