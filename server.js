@@ -50,7 +50,7 @@ const loadRooms = async () => {
     data.forEach((roomItem) => {
         const room = {
             clients: {},
-            activeVoice: {}
+            activeVoice: []
         };
 
         rooms[roomItem.id] = room
@@ -89,9 +89,9 @@ ioServer.on('connection', (client) => {
                     
                     delete rooms[clients[id].currentRoom].clients[id]
 
-                    if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
-                        client.leave(clients[id].currentRoom)
-                        delete rooms[clients[id].currentRoom].activeVoice[id]
+                    const voice = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+                    if(voice !== -1) {
+                        rooms[clients[id].currentRoom].activeVoice.splice(voice, 1);
                     }
 
                     clients[id].currentRoom = roomID
@@ -196,45 +196,24 @@ ioServer.on('connection', (client) => {
     });
 
     client.on('join voice', ({id}) => {
-        let enabled
         if(clients[id]) {
-            if(!rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
-                
-                client.join(clients[id].currentRoom)
-                rooms[clients[id].currentRoom].activeVoice[id] = {
-                    mute: false
-                }
-
-                enabled = true
-                const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
-
-                client.emit('mutedUser', mutedUser)
+            const found = rooms[clients[id].currentRoom].activeVoice.find((ID) => ID !== id);
+            if(found) {
+                rooms[clients[id].currentRoom].activeVoice.push(id)
             }
 
-            client.emit('enabled Join Voice', {enabled: enabled})
-        } else {
-            client.emit('enabled Join Voice', {enabled: false})
-        }
-    })
-
-    client.on('setMute', ({onMute, from}) => {
-        
-        if(clients[from]) {
-            rooms[clients[from].currentRoom].activeVoice[from].mute = onMute
-            const mutedUser = Object.keys(rooms[clients[from].currentRoom].activeVoice).filter((ID) => rooms[clients[from].currentRoom].activeVoice[ID].mute === true);
-
-            client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+            client.emit('enabled Join Voice', {enabled: true})
         }
     })
 
     client.on('exit voice', ({id}) => {
         if(clients[id]) {
-            if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
-                client.leave(clients[id].currentRoom)
-                delete rooms[clients[id].currentRoom].activeVoice[id]
-                const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
-                    
-                client.to(clients[id].currentRoom).emit('mutedUser', mutedUser)
+            const found = rooms[clients[id].currentRoom].activeVoice.find((ID) => ID === id);
+            if(found) {
+                const voice = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+                if(voice !== -1) {
+                    rooms[clients[id].currentRoom].activeVoice.splice(voice, 1);
+                }
             }
         }
     })
@@ -283,7 +262,7 @@ ioServer.on('connection', (client) => {
             
             const email = clients[client.id].email
             if(email !== ''){
-                
+
 
                 const index = activeEmail.indexOf(email);
 
@@ -296,8 +275,10 @@ ioServer.on('connection', (client) => {
 
                 delete rooms[clients[client.id].currentRoom].clients[client.id]
                 
-                client.leave(clients[client.id].currentRoom)
-                delete rooms[clients[client.id].currentRoom].activeVoice[client.id]
+                const voice = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
+                if(voice !== -1) {
+                    rooms[clients[client.id].currentRoom].activeVoice.splice(voice, 1);
+                }
 
             }
 
