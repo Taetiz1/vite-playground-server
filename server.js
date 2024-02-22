@@ -86,12 +86,13 @@ ioServer.on('connection', (client) => {
                     clients[id].currentRoom = roomID
     
                 } else {
+                    const currentRoom = clients[id].currentRoom
                     
-                    delete rooms[clients[id].currentRoom].clients[id]
+                    delete rooms[currentRoom].clients[id]
 
-                    const voice = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+                    const voice = rooms[currentRoom].activeVoice.indexOf(id);
                     if(voice !== -1) {
-                        rooms[clients[id].currentRoom].activeVoice.splice(voice, 1);
+                        rooms[currentRoom].activeVoice.splice(voice, 1);
                     }
 
                     clients[id].currentRoom = roomID
@@ -156,16 +157,13 @@ ioServer.on('connection', (client) => {
         try {
             
             if(clients[id]) {
-                if( rooms[clients[id].currentRoom].clients[id].position !== position || 
-                    rooms[clients[id].currentRoom].clients[id].position !== rotation || 
-                    rooms[clients[id].currentRoom].clients[id].action !== action
-                ) {
-                    rooms[clients[id].currentRoom].clients[id].position = position
-                    rooms[clients[id].currentRoom].clients[id].rotation = rotation
-                    rooms[clients[id].currentRoom].clients[id].action = action
-                }
+                const currentRoom = clients[id].currentRoom
 
-                client.emit('move', rooms[clients[id].currentRoom].clients)
+                rooms[currentRoom].clients[id].position = position
+                rooms[currentRoom].clients[id].rotation = rotation
+                rooms[currentRoom].clients[id].action = action
+
+                client.emit('move', rooms[currentRoom].clients)
             }
 
         } catch (error) {
@@ -185,14 +183,16 @@ ioServer.on('connection', (client) => {
             messages.push(msg)
                 
             if(clients[msg.id]) {
-                rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = msg.message;
+                const currentRoom = clients[msg.id].currentRoom
+
+                rooms[currentRoom].clients[msg.id].chathead = msg.message;
 
                 if(chatheadTimeout) {
                     clearTimeout(chatheadTimeout);
                 }
 
                 chatheadTimeout = setTimeout(() => {
-                    rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = "";
+                    rooms[currentRoom].clients[msg.id].chathead = "";
                 }, 5000);
             }
             
@@ -202,9 +202,10 @@ ioServer.on('connection', (client) => {
 
     client.on('join voice', ({id}) => {
         if(clients[id]) {
-            const found = rooms[clients[id].currentRoom].activeVoice.find((ID) => ID !== id);
+            const currentRoom = clients[id].currentRoom
+            const found = rooms[currentRoom].activeVoice.find((ID) => ID !== id);
             if(found) {
-                rooms[clients[id].currentRoom].activeVoice.push(id)
+                rooms[currentRoom].activeVoice.push(id)
             }
 
             client.emit('enabled Join Voice', {enabled: true})
@@ -213,11 +214,12 @@ ioServer.on('connection', (client) => {
 
     client.on('exit voice', ({id}) => {
         if(clients[id]) {
-            const found = rooms[clients[id].currentRoom].activeVoice.find((ID) => ID === id);
+            const currentRoom = clients[id].currentRoom
+            const found = rooms[currentRoom].activeVoice.find((ID) => ID === id);
             if(found) {
-                const voice = rooms[clients[id].currentRoom].activeVoice.indexOf(id);
+                const voice = rooms[currentRoom].activeVoice.indexOf(id);
                 if(voice !== -1) {
-                    rooms[clients[id].currentRoom].activeVoice.splice(voice, 1);
+                    rooms[currentRoom].activeVoice.splice(voice, 1);
                 }
             }
         }
@@ -264,6 +266,7 @@ ioServer.on('connection', (client) => {
         )
 
         if(clients[client.id]){
+            const currentRoom = clients[client.id].currentRoom
             
             const email = clients[client.id].email
             if(email !== ''){
@@ -274,15 +277,15 @@ ioServer.on('connection', (client) => {
                     activeEmail.splice(index, 1);
             }
 
-            if(clients[client.id].currentRoom !== ''){
+            if(currentRoom !== ''){
                 
-                database.set(`${email}.avatarUrl`, rooms[clients[client.id].currentRoom].clients[client.id].avatarUrl);
+                database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
 
-                delete rooms[clients[client.id].currentRoom].clients[client.id]
+                delete rooms[currentRoom].clients[client.id]
                 
-                const voice = rooms[clients[client.id].currentRoom].activeVoice.indexOf(client.id);
+                const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
                 if(voice !== -1) {
-                    rooms[clients[client.id].currentRoom].activeVoice.splice(voice, 1);
+                    rooms[currentRoom].activeVoice.splice(voice, 1);
                 }
 
             }
