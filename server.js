@@ -176,55 +176,66 @@ ioServer.on('connection', (client) => {
 
     client.emit('message', messages)
     client.on('message', (msg) => {
-        messages.push(msg)
-            
         if(clients[msg.id]) {
-            rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = msg.message;
+            messages.push(msg)
+                
+            if(clients[msg.id]) {
+                rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = msg.message;
 
-            if(chatheadTimeout) {
-                clearTimeout(chatheadTimeout);
+                if(chatheadTimeout) {
+                    clearTimeout(chatheadTimeout);
+                }
+
+                chatheadTimeout = setTimeout(() => {
+                    rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = "";
+                }, 5000);
             }
-
-            chatheadTimeout = setTimeout(() => {
-                rooms[clients[msg.id].currentRoom].clients[msg.id].chathead = "";
-            }, 5000);
+            
+            ioServer.sockets.emit('message', messages);
         }
-        
-        ioServer.sockets.emit('message', messages);
     });
 
     client.on('join voice', ({id}) => {
         let enabled
-        if(!rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
-            
-            client.join(clients[id].currentRoom)
-            rooms[clients[id].currentRoom].activeVoice[id] = {
-                mute: false
+        if(clients[id]) {
+            if(!rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+                
+                client.join(clients[id].currentRoom)
+                rooms[clients[id].currentRoom].activeVoice[id] = {
+                    mute: false
+                }
+
+                enabled = true
+                const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
+
+                client.emit('mutedUser', mutedUser)
             }
 
-            enabled = true
-            const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
-
-            client.emit('mutedUser', mutedUser)
+            client.emit('enabled Join Voice', {enabled: enabled})
+        } else {
+            client.emit('enabled Join Voice', {enabled: false})
         }
-
-        client.emit('enabled Join Voice', {enabled: enabled})
     })
 
     client.on('setMute', ({onMute, from}) => {
-        rooms[clients[from].currentRoom].activeVoice[from].mute = onMute
-        const mutedUser = Object.keys(rooms[clients[from].currentRoom].activeVoice).filter((ID) => rooms[clients[from].currentRoom].activeVoice[ID].mute === true);
+        
+        if(clients[from]) {
+            rooms[clients[from].currentRoom].activeVoice[from].mute = onMute
+            const mutedUser = Object.keys(rooms[clients[from].currentRoom].activeVoice).filter((ID) => rooms[clients[from].currentRoom].activeVoice[ID].mute === true);
 
-        client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+            client.to(clients[from].currentRoom).emit('mutedUser', mutedUser)
+        }
     })
 
     client.on('exit voice', ({id}) => {
-        if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
-            client.leave(clients[id].currentRoom)
-            delete rooms[clients[id].currentRoom].activeVoice[id]
-            const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
-                
-            client.to(clients[id].currentRoom).emit('mutedUser', mutedUser)
+        if(clients[id]) {
+            if(rooms[clients[id].currentRoom].activeVoice.hasOwnProperty(id)) {
+                client.leave(clients[id].currentRoom)
+                delete rooms[clients[id].currentRoom].activeVoice[id]
+                const mutedUser = Object.keys(rooms[clients[id].currentRoom].activeVoice).filter((ID) => rooms[clients[id].currentRoom].activeVoice[ID].mute === true);
+                    
+                client.to(clients[id].currentRoom).emit('mutedUser', mutedUser)
+            }
         }
     })
 
@@ -272,6 +283,7 @@ ioServer.on('connection', (client) => {
             
             const email = clients[client.id].email
             if(email !== ''){
+                
 
                 const index = activeEmail.indexOf(email);
 
