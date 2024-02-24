@@ -49,6 +49,7 @@ const loadRooms = async () => {
 
     data.forEach((roomItem) => {
         const room = {
+            settings: {...roomItem},
             clients: {},
             activeVoice: []
         };
@@ -72,6 +73,7 @@ ioServer.on('connection', (client) => {
 
         try {
             if(!rooms[roomID].clients.hasOwnProperty(id)) {
+
                 rooms[roomID].clients[id] = {
                     name: name,
                     position: [0, 0, 0],
@@ -81,26 +83,30 @@ ioServer.on('connection', (client) => {
                     avatarUrl: avatarUrl,
                 }
     
-                if(clients[id].currentRoom === ''){
-    
+                if(clients[id].currentRoom === '') {                    
+                
+                    client.join(roomID)
                     clients[id].currentRoom = roomID
     
                 } else {
                     const currentRoom = clients[id].currentRoom
                     
                     delete rooms[currentRoom].clients[id]
+                    client.to(currentRoom).emit('move', rooms[currentRoom].clients)
 
+                    client.leave(currentRoom)
                     const voice = rooms[currentRoom].activeVoice.indexOf(id);
                     if(voice !== -1) {
                         rooms[currentRoom].activeVoice.splice(voice, 1);
                     }
 
+                    client.join(roomID)
                     clients[id].currentRoom = roomID
                 }
     
-                client.emit('respawn', [3, 5, 2])
+                client.emit('respawn', rooms[roomID].settings.spawnPos)
                 client.emit('move', rooms[roomID].clients)
-                client.emit('currentRoom', roomID)
+                client.emit('currentRoom', rooms[roomID].settings)
             }
         } catch(error) {
             
@@ -163,7 +169,9 @@ ioServer.on('connection', (client) => {
                 rooms[currentRoom].clients[id].rotation = rotation
                 rooms[currentRoom].clients[id].action = action
 
-                client.emit('move', rooms[currentRoom].clients)
+                client.to(currentRoom).emit('move', rooms[currentRoom].clients)
+            } else {
+                client.emit("failed move")
             }
 
         } catch (error) {
@@ -278,6 +286,8 @@ ioServer.on('connection', (client) => {
             }
 
             if(currentRoom !== ''){
+
+                client.leave(currentRoom)
                 
                 database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
 
