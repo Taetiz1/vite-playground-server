@@ -5,7 +5,7 @@
         "url": "",
         "scale": [200, 200],
         "pos": [0, 0, 0],
-        "spawnPos": [0, 3, 0],
+        "spawnPos": [0, 2, 0],
         "enterBT": [
             {
                 "roomID": "1",
