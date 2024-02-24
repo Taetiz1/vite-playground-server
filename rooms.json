@@ -5,7 +5,7 @@
         "url": "",
         "scale": [200, 200],
         "pos": [0, 0, 0],
-        "spawnPos": [0, 2, 0],
+        "spawnPos": [0, 3, 0],
         "enterBT": [
             {
                 "roomID": "1",
@@ -20,7 +20,7 @@
         "url": "https://www.googleapis.com/drive/v3/files/1E3-1hBQDd3iNrPgmeTHfeeF_vYcZCI3J?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, 0, 0],
-        "spawnPos": [0, 2, 0],
+        "spawnPos": [0, 3, 0],
         "enterBT": [
             {
                 "roomID": "2",
