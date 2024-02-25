@@ -9,7 +9,7 @@ const questionsData = editJsonFile('./questions.json', {
     autosave: true
 });
 
-const adminData = editJsonFile('./admin_log.json', {
+const adminData = editJsonFile('./admin.json', {
     autosave: true
 });
 
@@ -18,16 +18,17 @@ const roomData = editJsonFile('./rooms.json', {
 });
 
 const origin = process.env.CLIENT_URL || "http://localhost:5173";
-
+const adminSite = process.env.ADMIN_URL || "http://localhost:5000";
+ 
 const ioServer = new Server({
     cors: {
-      origin,
+        origin: [origin, adminSite],
     },
 })
 
 ioServer.listen(3000)
 
-console.log("Server started on port 3000, allowed cors origin: " + origin);
+console.log(`Server started on port 3000, allowed cors origin: ${origin} and ${adminSite}` );
 
 let clients = {}
 const messages = [];
@@ -130,7 +131,6 @@ ioServer.on('connection', (client) => {
                 } else {
                     const userConfig = database.get(`${email}`)
                     
-                    // client.emit('inventory', clients[client.id].inventory)
                     client.emit('configSetting', userConfig.avatarUrl)
                 }
 
@@ -240,33 +240,31 @@ ioServer.on('connection', (client) => {
     //     client.emit("selectedQuestions", selectedQuestions);
     // });
 
-    // client.on("Admin_check", ({ id, password}) => {
-    //     const admin = adminData.get('account');
+    client.on("Admin_check", ({ id, password}) => {
+        const admin = adminData.get('account');
         
-    //     let check = false;
+        let check = false;
 
-    //     Object.keys(admin).forEach((adminID) => {
-            
+        Object.keys(admin).forEach((adminID) => {
 
-    //         if  (adminID == id) {
-    //             const adminPassword = adminData.get(`account.${adminID}.password`);
+            if(adminID == id) {
+                const adminPassword = adminData.get(`account.${adminID}.password`);
                 
-    //             console.log(adminID, id)
-    //             if (adminPassword == password) {
-    //                 check = true;
+                if (adminPassword == password) {
+                    check = true;
                     
-    //             } else {
-    //                 check = false;
-    //             }
-    //         } else {
+                } else {
+                    check = false;
+                }
+            } else {
                 
-    //             check = false;
-    //         }
-    //     })
+                check = false;
+            }
+        })
 
         
-    //     client.emit("Admin_check" , check)
-    // })
+        client.emit("Admin_check" , check)
+    })
 
     client.on('disconnect', () => {
         console.log(
