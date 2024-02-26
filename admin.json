@@ -1,9 +1,11 @@
 {
-    "account": {
-        "YWRtaW4=": {
-            "password": "cGFzc3dvcmRa"
-        }
+  "account": {
+    "YWRtaW4=": {
+      "password": "cGFzc3dvcmQ="
     },
-
-    "log": []
+    "dGFldGl6": {
+      "password": "cGFzc3dvcmQ="
+    }
+  },
+  "log": []
 }

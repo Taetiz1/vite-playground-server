@@ -151,7 +151,7 @@ ioServer.on('connection', (client) => {
         
             clients[client.id] = {
                 currentRoom: '',
-                email: email,
+                email: '',
             }
 
             client.emit('alreadyLogin', false);
@@ -243,15 +243,17 @@ ioServer.on('connection', (client) => {
     client.on("Admin_check", ({ id, password}) => {
         const admin = adminData.get('account');
         
-        let check = false;
+        let check;
 
-        Object.keys(admin).forEach((adminID) => {
-
-            if(adminID == id) {
+        Object.keys(admin).forEach((adminID, index, arr) => {
+            if(id === adminID) {
                 const adminPassword = adminData.get(`account.${adminID}.password`);
-                
-                if (adminPassword == password) {
+                if(password === adminPassword) {
                     check = true;
+                    adminData.append("log", {id: id, action: "เข้าสู่ระบบ", time: Date.now()});
+                    // const date = new Date(Date.now());
+                    // console.log(date.toLocaleString());
+                    arr.length = index + 1
                     
                 } else {
                     check = false;
@@ -262,8 +264,46 @@ ioServer.on('connection', (client) => {
             }
         })
 
-        
-        client.emit("Admin_check" , check)
+        client.emit("Admin_check" , {check: check, id: id})
+    })
+
+    client.on('get stats', () => {
+        const stats = {
+            clients: Object.keys(clients).length,
+            registedEmail: Object.keys(database.get()).length,
+            activeEmail: activeEmail.length
+        }
+
+        client.emit("get stats", stats)
+    })
+
+    client.on('get admin', () => {
+        const admin = adminData.get()
+
+        client.emit("get admin", admin)
+    })
+
+    client.on("add admin", ({id, password}) => {
+        adminData.set(`account.${id}`, {password: password})
+
+        const admin = adminData.get()
+        client.emit("get admin", admin)
+    })
+
+    client.on("clear log", () => {
+        adminData.set('log', [])
+
+        const admin = adminData.get()
+        client.emit("get admin", admin)
+    })
+
+    client.on("remove admin", (id) => {
+        if(Object.keys(adminData.get("account")).length > 1) {
+            adminData.unset(`account.${id}`)
+        }
+
+        const admin = adminData.get()
+        client.emit("get admin", admin)
     })
 
     client.on('disconnect', () => {
@@ -275,32 +315,43 @@ ioServer.on('connection', (client) => {
             const currentRoom = clients[client.id].currentRoom
             
             const email = clients[client.id].email
-            if(email !== ''){
 
+            if(email !== ''){
 
                 const index = activeEmail.indexOf(email);
 
                     activeEmail.splice(index, 1);
-            }
 
-            if(currentRoom !== ''){
+                if(currentRoom !== '') {
+                    database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
+                    client.leave(currentRoom)
 
-                client.leave(currentRoom)
+                    delete rooms[currentRoom].clients[client.id]
+                    
+                    const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
+                    if(voice !== -1) {
+                        rooms[currentRoom].activeVoice.splice(voice, 1);
+                    }
+                }
+            } else {
                 
-                database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
+                if(currentRoom !== '') {
+                    
+                    client.leave(currentRoom)
 
-                delete rooms[currentRoom].clients[client.id]
-                
-                const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
-                if(voice !== -1) {
-                    rooms[currentRoom].activeVoice.splice(voice, 1);
+                    delete rooms[currentRoom].clients[client.id]
+                    
+                    const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
+                    if(voice !== -1) {
+                        rooms[currentRoom].activeVoice.splice(voice, 1);
+                    }
+
                 }
 
             }
 
+            delete clients[client.id]
         }
-
-        delete clients[client.id]
     })
 
 })
