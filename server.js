@@ -306,6 +306,11 @@ ioServer.on('connection', (client) => {
         client.emit("get admin", admin)
     })
 
+    client.on("get user", () => {
+        const user = database.get()
+        client.emit("get user", user)
+    })
+
     client.on('disconnect', () => {
         console.log(
             `User ${client.id} disconnected, there are currently ${ioServer.engine.clientsCount} users connected`
