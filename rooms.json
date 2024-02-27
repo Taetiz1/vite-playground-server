@@ -20,11 +20,11 @@
         "url": "https://www.googleapis.com/drive/v3/files/1E3-1hBQDd3iNrPgmeTHfeeF_vYcZCI3J?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, 0, 0],
-        "spawnPos": [0, 3, 0],
+        "spawnPos": [28, 2, 21],
         "enterBT": [
             {
                 "roomID": "2",
-                "pos": [0, 2, 0]
+                "pos": [23.5, 2, -39]
             }
         ],
         "object": []
