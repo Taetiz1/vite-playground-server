@@ -70,7 +70,7 @@ ioServer.on('connection', (client) => {
         `User ${client.id} connected, there are currently ${ioServer.engine.clientsCount} users connected`
     )
 
-    client.on('joinroom', ({id, name, avatarUrl, roomID}) => {
+    client.on('joinroom', ({id, name, avatarUrl, roomID, atPos}) => {
 
         try {
             if(!rooms[roomID].clients.hasOwnProperty(id)) {
@@ -88,6 +88,9 @@ ioServer.on('connection', (client) => {
                 
                     client.join(roomID)
                     clients[id].currentRoom = roomID
+                    
+                    client.emit('move', rooms[roomID].clients)
+                    client.emit('currentRoom', {settings: rooms[roomID].settings})
     
                 } else {
                     const currentRoom = clients[id].currentRoom
@@ -103,11 +106,10 @@ ioServer.on('connection', (client) => {
 
                     client.join(roomID)
                     clients[id].currentRoom = roomID
+
+                    client.emit('move', rooms[roomID].clients)
+                    client.emit('currentRoom', {settings: rooms[roomID].settings, atPos: atPos})
                 }
-    
-                client.emit('respawn', rooms[roomID].settings.spawnPos)
-                client.emit('move', rooms[roomID].clients)
-                client.emit('currentRoom', rooms[roomID].settings)
             }
         } catch(error) {
             
@@ -309,6 +311,11 @@ ioServer.on('connection', (client) => {
     client.on("get user", () => {
         const user = database.get()
         client.emit("get user", user)
+    })
+
+    client.on("get scene", () => {
+        const scene = roomData.get()
+        client.emit("get scene", scene)
     })
 
     client.on('disconnect', () => {

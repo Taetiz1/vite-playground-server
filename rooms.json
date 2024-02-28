@@ -5,6 +5,7 @@
         "url": "",
         "scale": [200, 200],
         "pos": [0, 0, 0],
+        "rot": [0, 0, 0],
         "spawnPos": [0, 2, 0],
         "enterBT": [
             {
@@ -20,11 +21,13 @@
         "url": "https://www.googleapis.com/drive/v3/files/1E3-1hBQDd3iNrPgmeTHfeeF_vYcZCI3J?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, 0, 0],
-        "spawnPos": [28, 2, 21],
+        "rot": [0, 0, 0],
+        "spawnPos": [28, 1.5, 21],
         "enterBT": [
             {
                 "roomID": "2",
-                "pos": [23.5, 2, -39]
+                "pos": [23.5, 1.5, -39],
+                "atPos": [2.9, 2.5, -24]
             }
         ],
         "object": []
@@ -35,11 +38,13 @@
         "url": "https://www.googleapis.com/drive/v3/files/16zc1ShxuNw4a2Pf7DxCZyqPx5NlgKcJW?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, -4, 0],
-        "spawnPos": [2.9, 2, -24],
+        "rot": [0, 0, 0],
+        "spawnPos": [2.9, 2.5, -24],
         "enterBT": [
             {
                 "roomID": "1",
-                "pos": [2.9, 2, -25]
+                "pos": [2.9, 2.5, -25],
+                "atPos": [23.5, 1.5, -39]
             }
         ],
         "object": []
