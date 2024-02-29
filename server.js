@@ -88,9 +88,6 @@ ioServer.on('connection', (client) => {
                 
                     client.join(roomID)
                     clients[id].currentRoom = roomID
-                    
-                    client.emit('move', rooms[roomID].clients)
-                    client.emit('currentRoom', {settings: rooms[roomID].settings})
     
                 } else {
                     const currentRoom = clients[id].currentRoom
@@ -105,11 +102,24 @@ ioServer.on('connection', (client) => {
                     }
 
                     client.join(roomID)
-                    clients[id].currentRoom = roomID
-
-                    client.emit('move', rooms[roomID].clients)
-                    client.emit('currentRoom', {settings: rooms[roomID].settings, atPos: atPos})
+                    clients[id].currentRoom = roomID   
                 }
+                const setting = rooms[roomID].settings
+
+                const settings = {
+                    id: setting.id,
+                    name: setting.name,
+                    url: setting.url,
+                    scale: setting.scale,
+                    pos: setting.pos,
+                    rot: setting.rot,
+                    spawnPos: setting.spawnPos[atPos],
+                    enterBT: setting.enterBT,
+                    object: setting.object
+                }
+
+                client.emit('move', rooms[roomID].clients)
+                client.emit('currentRoom', {settings: settings})
             }
         } catch(error) {
             
