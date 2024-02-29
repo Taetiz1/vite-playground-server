@@ -342,29 +342,18 @@ ioServer.on('connection', (client) => {
             const currentRoom = clients[client.id].currentRoom
             
             const email = clients[client.id].email
+            if(currentRoom !== '') {
+                if(email !== '') {
 
-            if(email !== ''){
+                    const index = activeEmail.indexOf(email);
 
-                const index = activeEmail.indexOf(email);
+                        activeEmail.splice(index, 1);
 
-                    activeEmail.splice(index, 1);
-
-                if(currentRoom !== '') {
-                    database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
-                    client.leave(currentRoom)
-
-                    delete rooms[currentRoom].clients[client.id]
-                    
-                    const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
-                    if(voice !== -1) {
-                        rooms[currentRoom].activeVoice.splice(voice, 1);
-                    }
-                }
-            } else {
                 
-                if(currentRoom !== '') {
-                    
-                    client.leave(currentRoom)
+                    database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
+                }
+            
+                client.leave(currentRoom)
 
                     delete rooms[currentRoom].clients[client.id]
                     
@@ -372,11 +361,8 @@ ioServer.on('connection', (client) => {
                     if(voice !== -1) {
                         rooms[currentRoom].activeVoice.splice(voice, 1);
                     }
-
-                }
-
+                client.to(currentRoom).emit('move', rooms[currentRoom].clients)
             }
-
             delete clients[client.id]
         }
     })
