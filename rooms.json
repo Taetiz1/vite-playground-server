@@ -10,14 +10,15 @@
         "enterBT": [
             {
                 "roomID": "1",
-                "pos": [0, 2, 0]
+                "pos": [0, 2, 0],
+                "atPos": [0, 0, 0]
             }
         ],
         "object": []
     },
     {
         "id": "1",
-        "name": "wat suan kaew front",
+        "name": "wat suan kaew(front)",
         "url": "https://www.googleapis.com/drive/v3/files/1E3-1hBQDd3iNrPgmeTHfeeF_vYcZCI3J?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, 0, 0],
@@ -34,7 +35,7 @@
     },
     {
         "id": "2",
-        "name": "wat suan kaew back",
+        "name": "wat suan kaew(back)",
         "url": "https://www.googleapis.com/drive/v3/files/16zc1ShxuNw4a2Pf7DxCZyqPx5NlgKcJW?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
         "scale": [0.8, 0.8, 0.8],
         "pos": [0, -4, 0],

@@ -62,7 +62,7 @@ const loadRooms = async () => {
 loadRooms();
 
 let activeEmail = []
-const defaultAvatar = 'https://models.readyplayer.me/655a5d4e9b792809cdac419d.glb'
+const defaultAvatar = database.get("default").avatarUrl
 
 ioServer.on('connection', (client) => {
 

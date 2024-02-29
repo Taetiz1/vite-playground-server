@@ -7,11 +7,5 @@
       "password": "cGFzc3dvcmQ="
     }
   },
-  "log": [
-    {
-      "id": "YWRtaW4=",
-      "action": "เข้าสู่ระบบ",
-      "time": 1709109576838
-    }
-  ]
+  "log": []
 }
