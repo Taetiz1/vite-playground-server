@@ -73,6 +73,7 @@ ioServer.on('connection', (client) => {
     client.on('joinroom', ({id, name, avatarUrl, roomID, atPos}) => {
 
         try {
+
             if(!rooms[roomID].clients.hasOwnProperty(id)) {
 
                 rooms[roomID].clients[id] = {
@@ -83,11 +84,28 @@ ioServer.on('connection', (client) => {
                     chathead: "" ,
                     avatarUrl: avatarUrl,
                 }
+
+                const setting = rooms[roomID].settings
+
+                const settings = {
+                    id: setting.id,
+                    name: setting.name,
+                    url: setting.url,
+                    scale: setting.scale,
+                    pos: setting.pos,
+                    rot: setting.rot,
+                    spawnPos: setting.spawnPos[atPos],
+                    enterBT: setting.enterBT,
+                    object: setting.object
+                }
     
                 if(clients[id].currentRoom === '') {                    
                 
                     client.join(roomID)
                     clients[id].currentRoom = roomID
+
+                    client.emit('move', rooms[roomID].clients)
+                    client.emit('currentRoom', {settings: settings})
     
                 } else {
                     const currentRoom = clients[id].currentRoom
@@ -103,23 +121,10 @@ ioServer.on('connection', (client) => {
 
                     client.join(roomID)
                     clients[id].currentRoom = roomID   
-                }
-                const setting = rooms[roomID].settings
 
-                const settings = {
-                    id: setting.id,
-                    name: setting.name,
-                    url: setting.url,
-                    scale: setting.scale,
-                    pos: setting.pos,
-                    rot: setting.rot,
-                    spawnPos: setting.spawnPos[atPos],
-                    enterBT: setting.enterBT,
-                    object: setting.object
+                    client.emit('move', rooms[roomID].clients)
+                    client.emit('currentRoom', {settings: settings})
                 }
-
-                client.emit('move', rooms[roomID].clients)
-                client.emit('currentRoom', {settings: settings})
             }
         } catch(error) {
             
