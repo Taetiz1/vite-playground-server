@@ -85,25 +85,24 @@ ioServer.on('connection', (client) => {
                     avatarUrl: avatarUrl,
                 }
 
+                const setting = rooms[roomID].settings
+
                 const settings = {
-                    id: rooms[roomID].settings.id,
-                    name: rooms[roomID].settings.name,
-                    url: rooms[roomID].settings.url,
-                    scale: rooms[roomID].settings.scale,
-                    pos: rooms[roomID].settings.pos,
-                    rot: rooms[roomID].settings.rot,
-                    spawnPos: rooms[roomID].settings.spawnPos[atPos],
-                    enterBT: rooms[roomID].settings.enterBT,
-                    object: rooms[roomID].settings.object
+                    id: setting.id,
+                    name: setting.name,
+                    url: setting.url,
+                    scale: setting.scale,
+                    pos: setting.pos,
+                    rot: setting.rot,
+                    spawnPos: setting.spawnPos[atPos],
+                    enterBT: setting.enterBT,
+                    object: setting.object
                 }
     
                 if(clients[id].currentRoom === '') {                    
                 
                     client.join(roomID)
                     clients[id].currentRoom = roomID
-
-                    client.emit('move', rooms[roomID].clients)
-                    client.emit('currentRoom', {settings: settings})
     
                 } else {
                     const currentRoom = clients[id].currentRoom
@@ -119,10 +118,10 @@ ioServer.on('connection', (client) => {
 
                     client.join(roomID)
                     clients[id].currentRoom = roomID   
-
-                    client.emit('move', rooms[roomID].clients)
-                    client.emit('currentRoom', {settings: settings})
                 }
+
+                client.emit('move', rooms[roomID].clients)
+                client.emit('currentRoom', settings)
             }
         } catch(error) {
             
