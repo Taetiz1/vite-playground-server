@@ -200,10 +200,11 @@ ioServer.on('connection', (client) => {
     client.emit('message', messages)
     client.on('message', (msg) => {
         if(clients[msg.id]) {
+            
+            const currentRoom = clients[msg.id].currentRoom
             messages.push(msg)
                 
             if(clients[msg.id]) {
-                const currentRoom = clients[msg.id].currentRoom
 
                 rooms[currentRoom].clients[msg.id].chathead = msg.message;
 
@@ -213,10 +214,12 @@ ioServer.on('connection', (client) => {
 
                 chatheadTimeout = setTimeout(() => {
                     rooms[currentRoom].clients[msg.id].chathead = "";
+                    client.to(currentRoom).emit('move', rooms[currentRoom].clients)
                 }, 5000);
             }
             
             ioServer.sockets.emit('message', messages);
+            client.to(currentRoom).emit('move', rooms[currentRoom].clients)
         }
     });
 
