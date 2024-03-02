@@ -351,7 +351,6 @@ ioServer.on('connection', (client) => {
 
                         activeEmail.splice(index, 1);
 
-                
                     database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
                 }
             
@@ -364,6 +363,13 @@ ioServer.on('connection', (client) => {
                         rooms[currentRoom].activeVoice.splice(voice, 1);
                     }
                 client.to(currentRoom).emit('move', rooms[currentRoom].clients)
+            } else {
+                if(email !== '') {
+
+                    const index = activeEmail.indexOf(email);
+
+                    activeEmail.splice(index, 1);
+                }
             }
             delete clients[client.id]
         }
