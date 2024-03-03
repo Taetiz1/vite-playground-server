@@ -94,7 +94,7 @@ ioServer.on('connection', (client) => {
                     scale: setting.scale,
                     pos: setting.pos,
                     rot: setting.rot,
-                    spawnPos: setting.spawnPos[atPos],
+                    spawnPos: setting.spawnPos[atPos] !== undefined ? setting.spawnPos[atPos] : setting.spawnPos[0],
                     enterBT: setting.enterBT,
                     object: setting.object
                 }
@@ -270,8 +270,6 @@ ioServer.on('connection', (client) => {
                 if(password === adminPassword) {
                     check = true;
                     adminData.append("log", {id: id, action: "เข้าสู่ระบบ", time: Date.now()});
-                    // const date = new Date(Date.now());
-                    // console.log(date.toLocaleString());
                     arr.length = index + 1
                     
                 } else {
@@ -333,6 +331,12 @@ ioServer.on('connection', (client) => {
     client.on("get scene", () => {
         const scene = roomData.get()
         client.emit("get scene", scene)
+    })
+
+    client.on("save scene", ({scene, sceneIndex}) => {
+        roomData.set(`${sceneIndex}`, scene)
+
+        rooms[scene.id].settings = roomData.get(`${sceneIndex}`)
     })
 
     client.on('disconnect', () => {
