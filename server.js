@@ -136,11 +136,11 @@ ioServer.on('connection', (client) => {
     client.on('getEmail', ({ email }) => {
         if(email) {
 
-            if (!activeEmail.includes(email) ) {
+            if(!activeEmail.includes(email) ) {
 
                 activeEmail.push(email)
 
-                if (!database.data.hasOwnProperty(email)) { 
+                if(!database.data.hasOwnProperty(email)) { 
                     database.set(`${email}`, {
                         avatarUrl: defaultAvatar
                     });
@@ -347,6 +347,13 @@ ioServer.on('connection', (client) => {
         const jsonString = JSON.stringify(scene, null, 2);
         roomData.write(jsonString)
         roomData.save()
+    })
+
+    client.on("save character", ({Email, avatarUrl}) => {
+        database.set(`${Email}.avatarUrl`, avatarUrl)
+
+        const user = database.get()
+        client.emit("get user", user)
     })
 
     client.on('disconnect', () => {
