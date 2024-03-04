@@ -74,54 +74,56 @@ ioServer.on('connection', (client) => {
 
         try {
 
-            if(!rooms[roomID].clients.hasOwnProperty(id)) {
+            if(rooms[roomID]) {
+                if(!rooms[roomID].clients.hasOwnProperty(id)) {
 
-                rooms[roomID].clients[id] = {
-                    name: name,
-                    position: [0, 0, 0],
-                    rotation: [0, 0, 0],
-                    action: "idle",
-                    chathead: "" ,
-                    avatarUrl: avatarUrl,
-                }
-
-                const setting = rooms[roomID].settings
-
-                const settings = {
-                    id: setting.id,
-                    name: setting.name,
-                    url: setting.url,
-                    scale: setting.scale,
-                    pos: setting.pos,
-                    rot: setting.rot,
-                    spawnPos: setting.spawnPos[atPos] !== undefined ? setting.spawnPos[atPos] : setting.spawnPos[0],
-                    enterBT: setting.enterBT,
-                    object: setting.object
-                }
-    
-                if(clients[id].currentRoom === '') {                    
-                
-                    client.join(roomID)
-                    clients[id].currentRoom = roomID
-    
-                } else {
-                    const currentRoom = clients[id].currentRoom
-                    
-                    delete rooms[currentRoom].clients[id]
-                    client.to(currentRoom).emit('move', rooms[currentRoom].clients)
-
-                    client.leave(currentRoom)
-                    const voice = rooms[currentRoom].activeVoice.indexOf(id);
-                    if(voice !== -1) {
-                        rooms[currentRoom].activeVoice.splice(voice, 1);
+                    rooms[roomID].clients[id] = {
+                        name: name,
+                        position: [0, 0, 0],
+                        rotation: [0, 0, 0],
+                        action: "idle",
+                        chathead: "" ,
+                        avatarUrl: avatarUrl,
                     }
 
-                    client.join(roomID)
-                    clients[id].currentRoom = roomID   
-                }
+                    const setting = rooms[roomID].settings
 
-                client.emit('move', rooms[roomID].clients)
-                client.emit('currentRoom', settings)
+                    const settings = {
+                        id: setting.id,
+                        name: setting.name,
+                        url: setting.url,
+                        scale: setting.scale,
+                        pos: setting.pos,
+                        rot: setting.rot,
+                        spawnPos: setting.spawnPos[atPos] !== undefined ? setting.spawnPos[atPos] : setting.spawnPos[0],
+                        enterBT: setting.enterBT,
+                        object: setting.object
+                    }
+        
+                    if(clients[id].currentRoom === '') {                    
+                    
+                        client.join(roomID)
+                        clients[id].currentRoom = roomID
+        
+                    } else {
+                        const currentRoom = clients[id].currentRoom
+                        
+                        delete rooms[currentRoom].clients[id]
+                        client.to(currentRoom).emit('move', rooms[currentRoom].clients)
+
+                        client.leave(currentRoom)
+                        const voice = rooms[currentRoom].activeVoice.indexOf(id);
+                        if(voice !== -1) {
+                            rooms[currentRoom].activeVoice.splice(voice, 1);
+                        }
+
+                        client.join(roomID)
+                        clients[id].currentRoom = roomID   
+                    }
+
+                    client.emit('move', rooms[roomID].clients)
+                    client.emit('currentRoom', settings)
+                }
             }
         } catch(error) {
             
@@ -334,9 +336,17 @@ ioServer.on('connection', (client) => {
     })
 
     client.on("save scene", ({scene, sceneIndex}) => {
-        roomData.set(`${sceneIndex}`, scene)
+        if(roomData.get(`${sceneIndex}`)) {
+            roomData.set(`${sceneIndex}`, scene)
 
-        rooms[scene.id].settings = roomData.get(`${sceneIndex}`)
+            rooms[scene.id].settings = roomData.get(`${sceneIndex}`)
+        }
+    })
+
+    client.on("save all scene", (scene) => {
+        const jsonString = JSON.stringify(scene, null, 2);
+        roomData.write(jsonString)
+        roomData.save()
     })
 
     client.on('disconnect', () => {
