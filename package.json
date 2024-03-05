@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "edit-json-file": "^1.8.0",
+    "fs": "^0.0.1-security",
     "nodemon": "^3.0.3",
     "socket.io": "^4.7.4"
   }

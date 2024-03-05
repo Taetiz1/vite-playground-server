@@ -73,7 +73,7 @@ ioServer.on('connection', (client) => {
 
         try {
 
-            if(rooms[roomID]) {
+            if(rooms[roomID].settings) {
                 if(!rooms[roomID].clients.hasOwnProperty(id)) {
 
                     rooms[roomID].clients[id] = {
@@ -106,15 +106,16 @@ ioServer.on('connection', (client) => {
         
                     } else {
                         const currentRoom = clients[id].currentRoom
-                        
-                        delete rooms[currentRoom].clients[id]
-                        client.to(currentRoom).emit('move', rooms[currentRoom].clients)
 
                         client.leave(currentRoom)
+
                         const voice = rooms[currentRoom].activeVoice.indexOf(id);
                         if(voice !== -1) {
                             rooms[currentRoom].activeVoice.splice(voice, 1);
                         }
+                        
+                        delete rooms[currentRoom].clients[id]
+                        client.to(currentRoom).emit('move', rooms[currentRoom].clients)
 
                         client.join(roomID)
                         clients[id].currentRoom = roomID   
@@ -338,14 +339,16 @@ ioServer.on('connection', (client) => {
         if(roomData.get(`${sceneIndex}`)) {
             roomData.set(`${sceneIndex}`, scene)
 
-            rooms[scene.id].settings = roomData.get(`${sceneIndex}`)
+            if(rooms[scene.id]){
+                rooms[scene.id].settings = roomData.get(`${sceneIndex}`);
+            }
         }
     })
 
-    client.on("save all scene", (scene) => {
+    client.on("save all scene", ({scene}) => {
         const jsonString = JSON.stringify(scene, null, 2);
         roomData.write(jsonString)
-        roomData.save()
+        roomData.data = scene
     })
 
     client.on("save character", ({Email, avatarUrl}) => {
@@ -353,6 +356,16 @@ ioServer.on('connection', (client) => {
 
         const user = database.get()
         client.emit("get user", user)
+    })
+
+    client.on("delete scene", (sceneID) => {
+        if(rooms[sceneID]) {
+            delete rooms[sceneID].settings
+
+            if(Object.keys(rooms[sceneID].clients).length === 0) {
+                delete rooms[sceneID]
+            }
+        }
     })
 
     client.on('disconnect', () => {
@@ -365,6 +378,9 @@ ioServer.on('connection', (client) => {
             
             const email = clients[client.id].email
             if(currentRoom !== '') {
+                
+                client.leave(currentRoom)
+
                 if(email !== '') {
 
                     const index = activeEmail.indexOf(email);
@@ -373,16 +389,15 @@ ioServer.on('connection', (client) => {
 
                     database.set(`${email}.avatarUrl`, rooms[currentRoom].clients[client.id].avatarUrl);
                 }
-            
-                client.leave(currentRoom)
 
-                    delete rooms[currentRoom].clients[client.id]
-                    
-                    const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
-                    if(voice !== -1) {
-                        rooms[currentRoom].activeVoice.splice(voice, 1);
-                    }
+                const voice = rooms[currentRoom].activeVoice.indexOf(client.id);
+                if(voice !== -1) {
+                    rooms[currentRoom].activeVoice.splice(voice, 1);
+                }
+
+                delete rooms[currentRoom].clients[client.id]
                 client.to(currentRoom).emit('move', rooms[currentRoom].clients)
+                
             } else {
                 if(email !== '') {
 
