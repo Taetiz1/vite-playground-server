@@ -17,8 +17,8 @@ const roomData = editJsonFile('./rooms.json', {
     autosave: true
 });
 
-const origin = process.env.CLIENT_URL || "http://localhost:5173";
-const adminSite = process.env.ADMIN_URL || "http://localhost:5000";
+const origin = process.env.CLIENT_URL || "http://127.0.0.1:5173";
+const adminSite = process.env.ADMIN_URL || "http://127.0.0.1:5000";
  
 const ioServer = new Server({
     cors: {
@@ -62,7 +62,6 @@ const loadRooms = async () => {
 loadRooms();
 
 let activeEmail = []
-const defaultAvatar = database.get("default").avatarUrl
 
 ioServer.on('connection', (client) => {
 
@@ -142,7 +141,7 @@ ioServer.on('connection', (client) => {
 
                 if(!database.data.hasOwnProperty(email)) { 
                     database.set(`${email}`, {
-                        avatarUrl: defaultAvatar
+                        avatarUrl: database.get("default").avatarUrl
                     });
                 } else {
                     const userConfig = database.get(`${email}`)
@@ -163,7 +162,7 @@ ioServer.on('connection', (client) => {
             }
         } else {
 
-            client.emit('configSetting', defaultAvatar)
+            client.emit('configSetting', database.get("default").avatarUrl)
         
             clients[client.id] = {
                 currentRoom: '',
