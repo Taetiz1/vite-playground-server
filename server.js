@@ -17,6 +17,10 @@ const roomData = editJsonFile('./rooms.json', {
     autosave: true
 });
 
+const defaultData = editJsonFile('./default.json', {
+    autosave: true
+});
+
 const origin = process.env.CLIENT_URL || "http://127.0.0.1:5173";
 const adminSite = process.env.ADMIN_URL || "http://127.0.0.1:5000";
  
@@ -172,7 +176,8 @@ ioServer.on('connection', (client) => {
 
             client.emit('alreadyLogin', false);
         }
-    
+
+        client.emit('starting point', defaultData.get('spawn'))
     })
     
     client.on('move', ({ id, rotation, position, action }) => {
@@ -293,7 +298,7 @@ ioServer.on('connection', (client) => {
             activeEmail: activeEmail.length
         }
 
-        client.emit("get stats", stats)
+        client.emit("get stats", {stats: stats, startPoint: defaultData.get("spawn")})
     })
 
     client.on('get admin', () => {
@@ -366,6 +371,24 @@ ioServer.on('connection', (client) => {
                 delete rooms[sceneID]
             }
         }
+    })
+
+    client.on("get start point", () => {
+        const rooms = roomData.get()
+        const roomtoselect = {}
+
+        rooms.forEach((room) => {
+            roomtoselect[room.id] = {
+                name: room.name,
+                spawnPos: [...room.spawnPos]
+            }
+        })
+
+        client.emit("get start point", roomtoselect)
+    })
+
+    client.on("edit start point", (edit) => {
+        defaultData.set("spawn", edit)
     })
 
     client.on('disconnect', () => {
