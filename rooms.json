@@ -40,7 +40,7 @@
   {
     "id": "1",
     "name": "wat suan kaew(front)",
-    "url": "https://www.googleapis.com/drive/v3/files/1E3-1hBQDd3iNrPgmeTHfeeF_vYcZCI3J?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
+    "url": "1GxMdUAwP6PY8TRxB2JHDmgnuxetHILXu",
     "scale": [
       0.8,
       0.8,
@@ -58,23 +58,23 @@
     ],
     "spawnPos": [
       [
-        27,
+        30,
         1.5,
-        21
+        47
       ],
       [
-        23.5,
-        1.5,
-        -38
+        28.5,
+        1.4,
+        -33
       ]
     ],
     "enterBT": [
       {
         "roomID": "2",
         "pos": [
-          23.5,
+          28.5,
           1.5,
-          -39
+          -35
         ],
         "atPos": 0
       }
@@ -84,15 +84,15 @@
   {
     "id": "2",
     "name": "wat suan kaew(back)",
-    "url": "https://www.googleapis.com/drive/v3/files/16zc1ShxuNw4a2Pf7DxCZyqPx5NlgKcJW?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
+    "url": "1aHT7lNE3H1azBGlZqJttSVQm6v7V6OVq",
     "scale": [
-      0.8,
-      0.8,
-      0.8
+      0.56,
+      0.56,
+      0.56
     ],
     "pos": [
       0,
-      -4,
+      0,
       0
     ],
     "rot": [
@@ -102,18 +102,18 @@
     ],
     "spawnPos": [
       [
-        2.9,
-        2.4,
-        -24
+        0,
+        1.2,
+        16
       ]
     ],
     "enterBT": [
       {
         "roomID": "1",
         "pos": [
-          2.9,
-          2.5,
-          -25
+          0,
+          1.2,
+          17
         ],
         "atPos": 1
       }

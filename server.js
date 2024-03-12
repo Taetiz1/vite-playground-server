@@ -1,6 +1,8 @@
 import { Server } from 'socket.io';
 import editJsonFile from 'edit-json-file'
- 
+import { google } from 'googleapis';
+import { Readable } from 'stream';
+
 const database = editJsonFile('./database.json', {
     autosave: true
 });
@@ -23,11 +25,33 @@ const defaultData = editJsonFile('./default.json', {
 
 const origin = process.env.CLIENT_URL || "http://127.0.0.1:5173";
 const adminSite = process.env.ADMIN_URL || "http://127.0.0.1:5000";
- 
+
+const CLIENT_ID = '780876938602-9gv1bfpipggqst85hvsu5hv9u149c0at.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+
+const REFRESH_TOKEN = '1//04d-MCCY67-wCCgYIARAAGAQSNwF-L9Ire-IGRDftb_qInza00k36chOJ-NmMHdjqljGAiMVyB0u5nN52daj41gvqNbvNDq5xzWQ';
+
+const DOWNLOAD_KEY = "AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+
+const ouath2Client = new google.auth.OAuth2(
+    CLIENT_ID,
+    CLIENT_SECRET,
+    REDIRECT_URI
+)
+
+ouath2Client.setCredentials({refresh_token: REFRESH_TOKEN})
+
+const drive = google.drive({
+    version: 'v3',
+    auth: ouath2Client
+})
+
 const ioServer = new Server({
     cors: {
         origin: [origin, adminSite],
     },
+    maxHttpBufferSize: 5e8
 })
 
 ioServer.listen(3000)
@@ -46,18 +70,42 @@ let chatheadTimeout;
 //     return selectedQuestions;
 // };  
 
+function bufferToStream(buffer) {
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null); // Mark the end of the stream
+    return stream;
+}
+
+async function generatePublicUrl(fileId) {
+    try {
+        await drive.permissions.create({
+            fileId, fileId,
+            requestBody: {
+                role: 'reader',
+                type: 'anyone'
+            }
+        })
+    } catch (error) {
+        console.log("error generate Public Url: ", error)
+    }
+} 
+
 const rooms = {};
 
 const loadRooms = async () => {
-    let data;
-    data = roomData.data
+    const data = roomData.get()
 
     data.forEach((roomItem) => {
+        const fileID = roomItem.url
+        
         const room = {
             settings: {...roomItem},
             clients: {},
             activeVoice: []
         };
+        room.settings.url = `https://www.googleapis.com/drive/v3/files/${fileID}?alt=media&key=${DOWNLOAD_KEY}`
+        console.log(room.settings.url)
 
         rooms[roomItem.id] = room
     });
@@ -294,11 +342,11 @@ ioServer.on('connection', (client) => {
     client.on('get stats', () => {
         const stats = {
             clients: Object.keys(clients).length,
-            registedEmail: Object.keys(database.get()).length,
+            registedEmail: Object.keys(database.get()).slice(1).length,
             activeEmail: activeEmail.length
         }
 
-        client.emit("get stats", {stats: stats, startPoint: defaultData.get("spawn")})
+        client.emit("get stats", {stats: stats, startPoint: defaultData.get("spawn"), downloadKey: DOWNLOAD_KEY})
     })
 
     client.on('get admin', () => {
@@ -335,18 +383,26 @@ ioServer.on('connection', (client) => {
         client.emit("get user", user)
     })
 
+    client.on("save character", ({Email, avatarUrl}) => {
+        database.set(`${Email}.avatarUrl`, avatarUrl)
+
+        const user = database.get()
+        client.emit("get user", user)
+    })
+
     client.on("get scene", () => {
-        const scene = roomData.get()
-        client.emit("get scene", scene)
+        const Scenes = roomData.get()
+        client.emit("get scene", Scenes)
     })
 
     client.on("save scene", ({scene, sceneIndex}) => {
         if(roomData.get(`${sceneIndex}`)) {
             roomData.set(`${sceneIndex}`, scene)
 
-            if(rooms[scene.id]){
-                rooms[scene.id].settings = roomData.get(`${sceneIndex}`);
-            }
+            const fileID = roomData.get(`${sceneIndex}.url`)
+            rooms[scene.id].settings = roomData.get(`${sceneIndex}`);
+            rooms[scene.id].settings.url = `https://www.googleapis.com/drive/v3/files/${fileID}?alt=media&key=${DOWNLOAD_KEY}`
+            
         }
     })
 
@@ -356,20 +412,23 @@ ioServer.on('connection', (client) => {
         roomData.data = scene
     })
 
-    client.on("save character", ({Email, avatarUrl}) => {
-        database.set(`${Email}.avatarUrl`, avatarUrl)
+    client.on("delete scene", async ({sceneID, sceneURL}) => {
+       try{
+            if(rooms[sceneID]) {
+                delete rooms[sceneID].settings
 
-        const user = database.get()
-        client.emit("get user", user)
-    })
-
-    client.on("delete scene", (sceneID) => {
-        if(rooms[sceneID]) {
-            delete rooms[sceneID].settings
-
-            if(Object.keys(rooms[sceneID].clients).length === 0) {
-                delete rooms[sceneID]
+                if(Object.keys(rooms[sceneID].clients).length === 0) {
+                    delete rooms[sceneID]
+                }
             }
+            const response = await drive.files.delete({
+                fileId: sceneURL,
+            })
+            console.log('delete file:', sceneID, response.status)
+            
+
+        } catch (error) {
+            console.log('Error delete file:', error.message);
         }
     })
 
@@ -389,6 +448,58 @@ ioServer.on('connection', (client) => {
 
     client.on("edit start point", (edit) => {
         defaultData.set("spawn", edit)
+    })
+
+    client.on("upload scene", async ({file, filename, sceneName}) => {
+
+        try {
+
+            let mimeType
+            
+            if(filename.endsWith('.glb')) {
+                mimeType = "model/gltf-binary"
+            } else if (filename.endsWith('.gltf')) {
+                mimeType = "model/gltf+json"
+            }
+
+            const response = await drive.files.create({
+              requestBody: {
+                name: filename,
+                mimeType: mimeType,
+              },
+              media: {
+                mimeType: mimeType,
+                body: bufferToStream(file)
+              }
+            });
+        
+            console.log('File uploaded,', response.data.id);
+            generatePublicUrl(response.data.id)
+            
+            const lastRoom = roomData.get(`${roomData.data.length - 1}.id`)
+
+            const newRoom = {
+                id: String(Number(lastRoom) + 1),
+                name: sceneName,
+                url: response.data.id,
+                scale: [0, 0, 0],
+                pos: [0, 0, 0],
+                rot: [0, 0, 0],
+                spawnPos: [
+                    [
+                      0,
+                      0,
+                      0
+                    ]
+                ],
+                enterBT: [],
+                object: []
+            }
+
+            roomData.append('', newRoom)
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
     })
 
     client.on('disconnect', () => {
