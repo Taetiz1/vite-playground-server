@@ -104,8 +104,6 @@ const loadRooms = async () => {
             clients: {},
             activeVoice: []
         };
-        room.settings.url = `https://www.googleapis.com/drive/v3/files/${fileID}?alt=media&key=${DOWNLOAD_KEY}`
-        console.log(room.settings.url)
 
         rooms[roomItem.id] = room
     });
@@ -142,39 +140,44 @@ ioServer.on('connection', (client) => {
                     const settings = {
                         id: setting.id,
                         name: setting.name,
-                        url: setting.url,
+                        url: `https://www.googleapis.com/drive/v3/files/${setting.url}?alt=media&key=${DOWNLOAD_KEY}`,
                         scale: setting.scale,
                         pos: setting.pos,
                         rot: setting.rot,
                         spawnPos: setting.spawnPos[atPos] !== undefined ? setting.spawnPos[atPos] : setting.spawnPos[0],
                         enterBT: setting.enterBT,
+                        colliders: setting.colliders,
                         object: setting.object
                     }
         
-                    if(clients[id].currentRoom === '') {                    
-                    
-                        client.join(roomID)
-                        clients[id].currentRoom = roomID
-        
-                    } else {
-                        const currentRoom = clients[id].currentRoom
+                    if(clients[id]) {
+                        if(clients[id].currentRoom === '') {                    
+                        
+                            client.join(roomID)
+                            clients[id].currentRoom = roomID
+            
+                        } else {
+                            const currentRoom = clients[id].currentRoom
 
-                        client.leave(currentRoom)
+                            client.leave(currentRoom)
 
-                        const voice = rooms[currentRoom].activeVoice.indexOf(id);
-                        if(voice !== -1) {
-                            rooms[currentRoom].activeVoice.splice(voice, 1);
+                            const voice = rooms[currentRoom].activeVoice.indexOf(id);
+                            if(voice !== -1) {
+                                rooms[currentRoom].activeVoice.splice(voice, 1);
+                            }
+                            
+                            delete rooms[currentRoom].clients[id]
+                            client.to(currentRoom).emit('move', rooms[currentRoom].clients)
+
+                            client.join(roomID)
+                            clients[id].currentRoom = roomID   
                         }
                         
-                        delete rooms[currentRoom].clients[id]
-                        client.to(currentRoom).emit('move', rooms[currentRoom].clients)
 
-                        client.join(roomID)
-                        clients[id].currentRoom = roomID   
+                        client.emit('move', rooms[roomID].clients)
+                        client.emit('currentRoom', settings)
                     }
-
-                    client.emit('move', rooms[roomID].clients)
-                    client.emit('currentRoom', settings)
+                    
                 }
             }
         } catch(error) {
@@ -399,10 +402,7 @@ ioServer.on('connection', (client) => {
         if(roomData.get(`${sceneIndex}`)) {
             roomData.set(`${sceneIndex}`, scene)
 
-            const fileID = roomData.get(`${sceneIndex}.url`)
-            rooms[scene.id].settings = roomData.get(`${sceneIndex}`);
-            rooms[scene.id].settings.url = `https://www.googleapis.com/drive/v3/files/${fileID}?alt=media&key=${DOWNLOAD_KEY}`
-            
+            rooms[roomData.get(`${sceneIndex}`).id].settings = scene
         }
     })
 
@@ -493,6 +493,7 @@ ioServer.on('connection', (client) => {
                     ]
                 ],
                 enterBT: [],
+                colliders: {},
                 object: []
             }
 
