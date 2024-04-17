@@ -38,7 +38,21 @@
     "colliders": {
       "cuboid": []
     },
-    "object": []
+    "interactive": [
+      {
+        "emote": "Sitting",
+        "pos": [
+          5,
+          2,
+          0
+        ],
+        "rot": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
   },
   {
     "id": "1",
@@ -817,7 +831,47 @@
         }
       ]
     },
-    "object": []
+    "interactive": [
+      {
+        "emote": "Sitting",
+        "pos": [
+          24.6,
+          0.55,
+          -12.8
+        ],
+        "rot": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "emote": "Feeding",
+        "pos": [
+          9.8,
+          0.55,
+          -8
+        ],
+        "rot": [
+          0,
+          1.5,
+          0
+        ]
+      },
+      {
+        "emote": "Sitting",
+        "pos": [
+          25.3,
+          0.55,
+          -12.8
+        ],
+        "rot": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
   },
   {
     "id": "2",
@@ -1489,6 +1543,36 @@
         }
       ]
     },
-    "object": []
+    "interactive": []
+  },
+  {
+    "id": "3",
+    "name": "example",
+    "url": "1juk5bxheCKVGUCaEDKRFh5wlGaz96fgP",
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "pos": [
+      0,
+      0,
+      0
+    ],
+    "rot": [
+      0,
+      0,
+      0
+    ],
+    "spawnPos": [
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "enterBT": [],
+    "colliders": {},
+    "interactive": []
   }
 ]

@@ -2,5 +2,15 @@
   "spawn": {
     "roomID": "1",
     "atPos": "0"
-  }
+  },
+  "animations": [
+    {
+      "action": "Sitting",
+      "url": "16ZuivIIAP7SuSsmrm1qjLa7szTkAYfF4"
+    },
+    {
+      "action": "Feeding",
+      "url": "1LZV5yHanwD1tBs2rZoPDwjv3VjQn-AMB"
+    }
+  ]
 }
