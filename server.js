@@ -589,8 +589,10 @@ ioServer.on('connection', (client) => {
 
             defaultData.append('animations', newAnimation)
             animations.push(`https://www.googleapis.com/drive/v3/files/${response.data.id}?alt=media&key=${DOWNLOAD_KEY}`)
+            client.emit('upload animation complete', true)
         } catch (error) {
             console.error('Error uploading file:', error);
+            client.emit('upload animation complete', false)
         }
     })
 
