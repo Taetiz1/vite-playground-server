@@ -176,7 +176,6 @@ ioServer.on('connection', (client) => {
                             // client.join(roomID)
                             clients[id].currentRoom = roomID   
                         }
-                        
 
                         client.emit('move', rooms[roomID].clients)
                         client.emit('currentRoom', settings)
@@ -264,6 +263,7 @@ ioServer.on('connection', (client) => {
 
     client.emit('message', messages)
     client.on('message', (msg) => {
+        console.log(msg)
         if(clients[msg.id]) {
             
             const currentRoom = clients[msg.id].currentRoom
@@ -438,7 +438,6 @@ ioServer.on('connection', (client) => {
 
     client.on("delete scene", async ({sceneID, sceneURL}) => {
        try{
-
             if(rooms[sceneID]) {
                 delete rooms[sceneID].settings
 
@@ -461,7 +460,6 @@ ioServer.on('connection', (client) => {
 
     client.on("update scene", async ({file, filename, sceneURL}) => {
         try {
-            
             let mimeType
             
             if(filename.endsWith('.glb')) {
@@ -483,18 +481,15 @@ ioServer.on('connection', (client) => {
                 
             })
             console.log('Update File,', response.data.id);
-
-            client.emit('update scene complete', true)
         } catch (error) {
             console.log('Error delete file:', error.message);
-            client.emit('update scene complete', false)
         }
+        client.emit('upload scene complete')
     })
 
     client.on("upload scene", async ({file, filename, sceneName}) => {
 
         try {
-
             let mimeType
             
             if(filename.endsWith('.glb')) {
@@ -548,12 +543,10 @@ ioServer.on('connection', (client) => {
     
             rooms[newRoom.id] = room
 
-            client.emit('upload scene complete', true)
-
         } catch (error) {
             console.error('Error uploading file:', error);
-            client.emit('upload scene complete', false)
         }
+        client.emit('upload scene complete')
     })
 
     client.on("upload animation", async ({file, filename, action}) => {
@@ -589,11 +582,10 @@ ioServer.on('connection', (client) => {
 
             defaultData.append('animations', newAnimation)
             animations.push(`https://www.googleapis.com/drive/v3/files/${response.data.id}?alt=media&key=${DOWNLOAD_KEY}`)
-            client.emit('upload animation complete', true)
         } catch (error) {
             console.error('Error uploading file:', error);
-            client.emit('upload animation complete', false)
         }
+        client.emit('upload animation complete')
     })
 
     client.on('disconnect', () => {
