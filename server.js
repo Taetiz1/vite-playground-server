@@ -62,13 +62,13 @@ let clients = {}
 const messages = [];
 let chatheadTimeout;
 
-// const randomQuestions = () => {
+const randomQuestions = () => {
     
-//     const questions = questionsData.get("questions")
-//     const shuffledQuestions = questions.sort(() => 0.5 - Math.random());
-//     const selectedQuestions = shuffledQuestions.slice(0, 3);
-//     return selectedQuestions;
-// };  
+    const questions = questionsData.get("questions")
+    const shuffledQuestions = questions.sort(() => 0.5 - Math.random());
+    const selectedQuestions = shuffledQuestions.slice(0, 5);
+    return selectedQuestions;
+};  
 
 function bufferToStream(buffer) {
     const stream = new Readable();
@@ -95,10 +95,10 @@ const rooms = {};
 const animations = []
 
 const loadRooms = async () => {
-    const data = roomData.get()
+    const roomsData = roomData.get()
     const animationData = defaultData.get('animations') 
 
-    data.forEach((roomItem) => {
+    roomsData.forEach((roomItem) => {
         const room = {
             settings: {...roomItem},
             clients: {},
@@ -151,7 +151,8 @@ ioServer.on('connection', (client) => {
                         spawnPos: setting.spawnPos[atPos] !== undefined ? setting.spawnPos[atPos] : setting.spawnPos[0],
                         enterBT: setting.enterBT,
                         colliders: setting.colliders,
-                        interactive: setting.interactive
+                        interactive: setting.interactive,
+                        information: setting.information
                     }
         
                     if(clients[id]) {
@@ -263,7 +264,6 @@ ioServer.on('connection', (client) => {
 
     client.emit('message', messages)
     client.on('message', (msg) => {
-        console.log(msg)
         if(clients[msg.id]) {
             
             const currentRoom = clients[msg.id].currentRoom
@@ -315,12 +315,13 @@ ioServer.on('connection', (client) => {
         }
     })
 
-    // client.emit("selectedQuestions", randomQuestions());
+    client.emit("selectedQuestions", randomQuestions());
+    client.emit("leaderBoard", questionsData.get('leaderBoard'))
 
-    // client.on("getRandomQuestions", () => {
-    //     const selectedQuestions = randomQuestions();
-    //     client.emit("selectedQuestions", selectedQuestions);
-    // });
+    client.on("getRandomQuestions", () => {
+        const selectedQuestions = randomQuestions();
+        client.emit("selectedQuestions", selectedQuestions);
+    });
 
     client.on("Admin_check", ({ id, password }) => {
         const admin = adminData.get('account');
@@ -354,7 +355,7 @@ ioServer.on('connection', (client) => {
             activeEmail: activeEmail.length
         }
 
-        client.emit("get stats", {stats: stats, startPoint: defaultData.get("spawn"), downloadKey: DOWNLOAD_KEY, animations: defaultData.get('animations')})
+        client.emit("get stats", {stats: stats, startPoint: defaultData.get("spawn"), downloadKey: DOWNLOAD_KEY, animations: defaultData.get('animations'), images: defaultData.get('images')})
     })
 
     client.on('get admin', () => {
@@ -482,7 +483,7 @@ ioServer.on('connection', (client) => {
             })
             console.log('Update File,', response.data.id);
         } catch (error) {
-            console.log('Error delete file:', error.message);
+            console.log('Error Update file:', error.message);
         }
         client.emit('upload scene complete')
     })
@@ -530,7 +531,8 @@ ioServer.on('connection', (client) => {
                 ],
                 enterBT: [],
                 colliders: {},
-                interactive: []
+                interactive: [],
+                information: []
             }
 
             roomData.append('', newRoom)
@@ -582,10 +584,58 @@ ioServer.on('connection', (client) => {
 
             defaultData.append('animations', newAnimation)
             animations.push(`https://www.googleapis.com/drive/v3/files/${response.data.id}?alt=media&key=${DOWNLOAD_KEY}`)
+            client.emit("add animation", defaultData.get('images'))
         } catch (error) {
             console.error('Error uploading file:', error);
         }
         client.emit('upload animation complete')
+    })
+
+    client.on("upload image", async ({file, filename, type, name}) => {
+
+        try {
+
+            const response = await drive.files.create({
+              requestBody: {
+                name: filename,
+                mimeType: type,
+              },
+              media: {
+                mimeType: type,
+                body: bufferToStream(file)
+              }
+            });
+        
+            console.log('File uploaded,', response.data.id);
+            generatePublicUrl(response.data.id)
+
+            const newImage = {
+                name: name,
+                url: `https://www.googleapis.com/drive/v3/files/${response.data.id}?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg`
+            }
+
+            defaultData.append('images', newImage)
+
+            client.emit("add image", defaultData.get('images'))
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
+        client.emit('upload image complete')
+    })
+
+    client.on('get question', () => {
+        const questions = questionsData.get()
+
+        client.emit('get question', questions)
+    })
+
+    client.on('save question', (questions) => {
+        questionsData.set('questions', questions)
+    })
+
+    client.on('set score', ({email, username, score}) => {
+        questionsData.append('leaderBoard', {email: email, username: username, score: score})
+        client.emit("leaderBoard", questionsData.get('leaderBoard'))
     })
 
     client.on('disconnect', () => {
@@ -629,5 +679,4 @@ ioServer.on('connection', (client) => {
             delete clients[client.id]
         }
     })
-
 })

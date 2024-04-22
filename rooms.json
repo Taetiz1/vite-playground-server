@@ -1,61 +1,6 @@
 [
   {
     "id": "0",
-    "name": "test",
-    "url": "",
-    "scale": [
-      200,
-      200
-    ],
-    "pos": [
-      0,
-      0,
-      0
-    ],
-    "rot": [
-      0,
-      0,
-      0
-    ],
-    "spawnPos": [
-      [
-        0,
-        2,
-        0
-      ]
-    ],
-    "enterBT": [
-      {
-        "roomID": "1",
-        "pos": [
-          0,
-          2,
-          0
-        ],
-        "atPos": 0
-      }
-    ],
-    "colliders": {
-      "cuboid": []
-    },
-    "interactive": [
-      {
-        "emote": "Sitting",
-        "pos": [
-          5,
-          2,
-          0
-        ],
-        "rot": [
-          0,
-          0,
-          0
-        ]
-      }
-    ]
-  },
-  {
-    "id": "1",
     "name": "ทางเข้าวัดสวนแก้ว",
     "url": "1GxMdUAwP6PY8TRxB2JHDmgnuxetHILXu",
     "scale": [
@@ -87,7 +32,7 @@
     ],
     "enterBT": [
       {
-        "roomID": "2",
+        "roomID": "1",
         "pos": [
           20,
           1,
@@ -871,16 +816,31 @@
           0
         ]
       }
+    ],
+    "information": [
+      {
+        "pos": [
+          12.1,
+          0.8,
+          6
+        ],
+        "image": [
+          "https://www.googleapis.com/drive/v3/files/1CekPmk5efoycSZQid99SaQhCUldBD7KY?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg",
+          "https://www.googleapis.com/drive/v3/files/13c5hBCGxzJLjE3a5afjQrpB8c0zCMpN9?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+        ],
+        "header": "ประวัติวัดสวนแก้ว",
+        "content": "เดิมชื่อ วัดแก้ว เป็นวัดร้างมา 80 ปี ภายหลังหลวงพ่อเทียน จิตตสุโภ และพระภิกษุอีก 3-4 รูป ได้เข้ามาพำนักแต่พื้นที่ ของวัดเต็มไปด้วยเรือกสวน หลวงพ่อไม่สามารถจะบูรณะได้เพราะขาดบุคลากรที่จะช่วยพัฒนา พ.ศ. 2521 พระพยอมและเพื่อนพระภิกษุอีก 2 รูป ได้เดินทางมากราบหลวงพ่อเทียน เพื่อขอทำโครงการ บวชเณรภาคฤดูร้อน เมื่อเสร็จแล้วก็จะลากลับสวนโมกข์ เมื่อหลวงพ่อเทียนได้อนุญาตให้พำนักแล้ว ยังได้ช่วยสนับ สนุนงานบวชเณรภาคฤดูร้อนด้วยโดยช่วยเป็นพระพี่เลี้ยงให้ พ.ศ. 2522 หลวงพ่อเทียนได้มอบหมายให้พระพยอมและเพื่อนภิกษุเป็นผู้ดูแลรักษาวัดต่อไป ส่วนตัวหลวงพ่อเทียน กลับจังหวัดเลย ที่วัดแก้วนี้ พระพยอมได้พัฒนาพื้นที่ของวัดและเตรียมจำลองสวนโมกขพลารามให้เกิดขึ้นในเมือง ตามคำที่ท่านพุทธทาสเคยปรารภเมื่อคราวที่ยังศึกษาธรรมอยู่ที่สวน โมกข"
+      }
     ]
   },
   {
-    "id": "2",
+    "id": "1",
     "name": "ศาลากลางน้ำ",
     "url": "1aHT7lNE3H1azBGlZqJttSVQm6v7V6OVq",
     "scale": [
-      0.7,
-      0.7,
-      0.7
+      0.56,
+      0.56,
+      0.56
     ],
     "pos": [
       0,
@@ -894,18 +854,18 @@
     ],
     "spawnPos": [
       [
-        0,
+        -0.5,
         1.5,
-        20
+        43
       ]
     ],
     "enterBT": [
       {
-        "roomID": "1",
+        "roomID": "0",
         "pos": [
-          0,
+          -0.5,
           1.5,
-          21
+          44
         ],
         "atPos": 1
       }
@@ -1543,12 +1503,13 @@
         }
       ]
     },
-    "interactive": []
+    "interactive": [],
+    "information": []
   },
   {
-    "id": "3",
-    "name": "example",
-    "url": "1juk5bxheCKVGUCaEDKRFh5wlGaz96fgP",
+    "id": "2",
+    "name": "วัดและธรรมชาติ",
+    "url": "1THNhkv3Vse6tkKw8sNhhwerW5PsA_AZO",
     "scale": [
       1,
       1,
@@ -1573,6 +1534,7 @@
     ],
     "enterBT": [],
     "colliders": {},
-    "interactive": []
+    "interactive": [],
+    "information": []
   }
 ]

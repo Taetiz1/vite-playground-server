@@ -1,6 +1,6 @@
 {
   "spawn": {
-    "roomID": "1",
+    "roomID": "0",
     "atPos": "0"
   },
   "animations": [
@@ -11,6 +11,32 @@
     {
       "action": "Feeding",
       "url": "1LZV5yHanwD1tBs2rZoPDwjv3VjQn-AMB"
+    }
+  ],
+  "images": [
+    {
+      "name": "motion",
+      "url": "https://www.googleapis.com/drive/v3/files/1CekPmk5efoycSZQid99SaQhCUldBD7KY?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+    },
+    {
+      "name": "Builder",
+      "url": "https://www.googleapis.com/drive/v3/files/1wesvS4rqq4kJANLQSQ7N7HHDA9nOuahf?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+    },
+    {
+      "name": "walk",
+      "url": "https://www.googleapis.com/drive/v3/files/13c5hBCGxzJLjE3a5afjQrpB8c0zCMpN9?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+    },
+    {
+      "name": "ทางเข้าวัดสวนแก้ว",
+      "url": "https://www.googleapis.com/drive/v3/files/10EmBhs75eZH2qH0QiYUyKME5TaQk6NjO?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+    },
+    {
+      "name": "ศาลากลางน้ำ",
+      "url": "https://www.googleapis.com/drive/v3/files/1fgTeWxL0NkRzca5081KQ9hv9wpp-L6HB?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
+    },
+    {
+      "name": "โบสถ์ธรรมชาติ",
+      "url": "https://www.googleapis.com/drive/v3/files/1Lqp8Ezpuq9Zb5p3Oln08mEJA6kR8wUkY?alt=media&key=AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
     }
   ]
 }
