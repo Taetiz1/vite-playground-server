@@ -30,7 +30,7 @@ const CLIENT_ID = '780876938602-9gv1bfpipggqst85hvsu5hv9u149c0at.apps.googleuser
 const CLIENT_SECRET = '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';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
-const REFRESH_TOKEN = '1//04ekYp_4V-5mYCgYIARAAGAQSNwF-L9Ir2OapPc2wB_w6Vx5x6mCECsTdrbUgcZSgWs-9HiM9sxaCL6LNFot40WRBJraPMnDhzWI';
+const REFRESH_TOKEN = '1//04B53giEtWmcGCgYIARAAGAQSNwF-L9IrIgNQmx3_m_8Jp7UE047QHrxFz5hNO4K55_U9qEd6Ijv70f4BpEE73nwX9mS1zHYzogA';
 
 const DOWNLOAD_KEY = "AIzaSyD7xq_I3NdTPkBKZ4AKMuivcmcpQv5x0xg"
 
@@ -63,10 +63,12 @@ const messages = [];
 let chatheadTimeout;
 
 const randomQuestions = () => {
-    
-    const questions = questionsData.get("questions")
-    const shuffledQuestions = questions.sort(() => 0.5 - Math.random());
+    const questions = questionsData.get('questions')
+    let questionToShuffle = questions
+
+    const shuffledQuestions = questionToShuffle.sort(() => 0.5 - Math.random());
     const selectedQuestions = shuffledQuestions.slice(0, 5);
+
     return selectedQuestions;
 };  
 
@@ -530,7 +532,9 @@ ioServer.on('connection', (client) => {
                     ]
                 ],
                 enterBT: [],
-                colliders: {},
+                colliders: {
+                    cuboid: []
+                },
                 interactive: [],
                 information: []
             }
@@ -625,6 +629,7 @@ ioServer.on('connection', (client) => {
 
     client.on('get question', () => {
         const questions = questionsData.get()
+        console.log
 
         client.emit('get question', questions)
     })

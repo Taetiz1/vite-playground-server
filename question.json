@@ -1,127 +1,127 @@
 {
   "questions": [
     {
-      "question": "คำถามที่ 5",
+      "question": "เมื่อพระนางสิริมหามายาทิวงคตแล้ว ใครเป็นผู้ดูแลพระกุมาร",
       "answerOptions": [
         {
-          "answerText": "คำตอบที่ผิด",
-          "isCorrect": false
-        },
-        {
-          "answerText": "คำตอบที่ถูก",
+          "answerText": "พระนางปชาบดี",
           "isCorrect": true
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พระนางกาญจนา",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พระนางรูปนันทา",
+          "isCorrect": false
+        },
+        {
+          "answerText": "พระนางอมิตา",
           "isCorrect": false
         }
       ]
     },
     {
-      "question": "คำถามที่ 2",
+      "question": "วันใด เป็นวันประสูติของเจ้าชายสิทธัตถะ ?",
       "answerOptions": [
         {
-          "answerText": "คำตอบที่ถูก",
+          "answerText": "วันขึ้น ๑๕ ค่่า เดือน ๓ ก่อนพ.ศ. ๘๐ ปี",
+          "isCorrect": false
+        },
+        {
+          "answerText": "วันขึ้น ๑๕ ค่่า เดือน ๖ ก่อนพ.ศ. ๘๐ ปี",
           "isCorrect": true
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "วันขึ้น ๘ ค่่า เดือน ๖ ก่อนพ.ศ. ๘๐ ปี",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
-          "isCorrect": false
-        },
-        {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "วันขึ้น ๑๕ ค่่า เดือน ๘ ก่อนพ.ศ. ๘๐ ปี",
           "isCorrect": false
         }
       ]
     },
     {
-      "question": "คำถาม",
+      "question": "ประเทศใดไม่ได้อยู่ในดินแดนชมพูทวีป?",
       "answerOptions": [
         {
-          "answerText": "ตัวเลือกที่ 1",
+          "answerText": "เนปาล",
+          "isCorrect": false
+        },
+        {
+          "answerText": "ศรีลังกา",
           "isCorrect": true
         },
         {
-          "answerText": "ตัวเลือกที่ 2",
+          "answerText": "อินเดีย",
           "isCorrect": false
         },
         {
-          "answerText": "ตัวเลือกที่ 3",
-          "isCorrect": false
-        },
-        {
-          "answerText": "ตัวเลือกที่ 4",
+          "answerText": "ปากีสถาน",
           "isCorrect": false
         }
       ]
     },
     {
-      "question": "คำถามที่ 1",
+      "question": "กษัตริย์พระองค์ใด เป็นพระราชบิดาของเจ้าชายสิทธัตถะ?",
       "answerOptions": [
         {
-          "answerText": "คำตอบที่ถูก",
+          "answerText": "พระเจ้าสุทโธทนะ",
           "isCorrect": true
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พระเจ้าสุกโกทนะ",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พระเจ้าอัญชนะ",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พระเจ้าสีหน",
           "isCorrect": false
         }
       ]
     },
     {
-      "question": "คำถามที่ 3",
+      "question": "พุทธประวัติกล่าวถึงเรื่องอะไร?",
       "answerOptions": [
         {
-          "answerText": "คำตอบที่ผิด",
-          "isCorrect": false
-        },
-        {
-          "answerText": "คำตอบที่ผิด",
-          "isCorrect": false
-        },
-        {
-          "answerText": "คำตอบที่ถูก",
+          "answerText": "ความเป็นไปของพระพุทธเจ้า",
           "isCorrect": true
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "ความเป็นไปของพระสาวก ",
+          "isCorrect": false
+        },
+        {
+          "answerText": "ความเป็นไปของนักบวช",
+          "isCorrect": false
+        },
+        {
+          "answerText": "ความเป็นไปของพุทธบริษัท ๔",
           "isCorrect": false
         }
       ]
     },
     {
-      "question": "คำถามที่ 4",
+      "question": "ชนเหล่าใดในสังคมอินเดียถูกเหยียดหยามมากที่สุด?",
       "answerOptions": [
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "พราหมณ์",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "แพศย์",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ผิด",
+          "answerText": "ศูทร",
           "isCorrect": false
         },
         {
-          "answerText": "คำตอบที่ถูก",
+          "answerText": "จัณฑาล",
           "isCorrect": true
         }
       ]
